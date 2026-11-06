@@ -60,8 +60,7 @@ public class CRInventoryJoin extends CRInventory {
 		 * Glass Spacer
 		 ***************************************************/
 
-		icon = new InventoryItem(new ItemStackManager(Material.STAINED_GLASS_PANE));
-		icon.getItem().setData((short) 10);
+		icon = new InventoryItem(new ItemStackManager(Material.PURPLE_STAINED_GLASS_PANE));
 		icon.getItem().setDisplayName(ChatColor.RED + "");
 
 		for (int i = 0; i < inventory.getSize(); i++)
@@ -83,7 +82,7 @@ public class CRInventoryJoin extends CRInventory {
 		 * arenas
 		 ***************************************************/
 
-		icon = new InventoryItem(new ItemStackManager(Material.INK_SACK));
+		icon = new InventoryItem(new ItemStackManager(Material.GRAY_DYE));
 		int slot = 18;
 
 		for (int i = ((page - 1) * 27); arenas.size() > i && slot < 45; i++) {
@@ -91,17 +90,17 @@ public class CRInventoryJoin extends CRInventory {
 			icon.getItem().clearLore();
 
 			if (arena.getGameState() == GameState.UNREADY) {
-				icon.getItem().setData((short) 8);
+				icon.getItem().setMaterial(Material.GRAY_DYE);
 				icon.getItem().setDisplayName(ChatColor.GOLD + arenas.get(i));
 				icon.getItem().addToLore(local.get(Messages.KEYWORD_GAMESTATE_UNSET));
 
 			} else if (arena.getGameState() == GameState.ACTIVE || arena.getGameState() == GameState.ENDING) {
-				icon.getItem().setData((short) 12);
+				icon.getItem().setMaterial(Material.LIGHT_BLUE_DYE);
 				icon.getItem().setDisplayName(ChatColor.GOLD + arenas.get(i));
 				icon.getItem().addToLore(local.get(Messages.KEYWORD_GAMESTATE_ACTIVE));
 
 			} else {
-				icon.getItem().setData((short) 10);
+				icon.getItem().setMaterial(Material.LIME_DYE);
 				icon.getItem().setDisplayName(ChatColor.GOLD + arenas.get(i));
 				icon.getItem().addToLore(local.get(Messages.KEYWORD_GAMESTATE_READY));
 				icon.getItem().addToLore(ChatColor.YELLOW + local.get(Messages.KEYWORD_SCOREBOARD_PLAYERS) + " : "

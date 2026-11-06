@@ -51,8 +51,7 @@ public class CRInventoryStats extends CRInventory {
 		 * Glass Spacer
 		 ***************************************************/
 
-		icon = new InventoryItem(new ItemStackManager(Material.STAINED_GLASS_PANE));
-		icon.getItem().setData((short) 10);
+		icon = new InventoryItem(new ItemStackManager(Material.PURPLE_STAINED_GLASS_PANE));
 		icon.getItem().setDisplayName(ChatColor.RED + "");
 
 		for (int i = 0; i < inventory.getSize(); i++)
@@ -118,7 +117,7 @@ public class CRInventoryStats extends CRInventory {
 
 		int position = 0;
 		for (Top10 top : Top10.values()) {
-			icon = new InventoryItem(new ItemStackManager(Material.EMPTY_MAP));
+			icon = new InventoryItem(new ItemStackManager(Material.MAP));
 			icon.getItem().setDisplayName(top.getName(local));
 			icon.getItem().addToLore(ChatColor.STRIKETHROUGH + "" + ChatColor.YELLOW + "----------------------------");
 
@@ -146,8 +145,8 @@ public class CRInventoryStats extends CRInventory {
 
 				boolean done = goal.getKey() <= crPlayer.getInt(achievement.getCrStats());
 
-				icon = new InventoryItem(new ItemStackManager(Material.WOOL));
-				icon.getItem().setData(done ? (short) 5 : (short) 8);
+				icon = new InventoryItem(
+						new ItemStackManager(done ? Material.LIME_WOOL : Material.LIGHT_GRAY_WOOL));
 				icon.getItem().setDisplayName((done ? ChatColor.GREEN : ChatColor.RED) + Utils.strip(local
 						.get(achievement.getAchievementMessage()).replace("%amount%", String.valueOf(goal.getKey()))));
 				icon.getItem().addToLore(ChatColor.YELLOW + "----------------------------");

@@ -1,73 +1,90 @@
 package me.poutineqc.cuberunner.utils;
 
-import org.bukkit.ChatColor;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
+
 import org.bukkit.entity.Player;
 
-import me.poutineqc.cuberunner.CubeRunner;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import net.kyori.adventure.title.Title;
 
-public class Utils {
+/**
+ * Text helpers.
+ *
+ * <p>CubeRunner's messages (language files, config, sign lines) are legacy strings using {@code &} or
+ * {@code §} color codes. They are kept as strings internally and turned into Adventure components only
+ * where they are handed to the server.
+ */
+public final class Utils {
 
-	public static Class<?> getNMSClass(String nmsClassString) throws ClassNotFoundException {
-		if (!CubeRunner.NMS_VERSION.equals("v1_8_R1")) {
-			if (nmsClassString.equals("ChatSerializer"))
-				nmsClassString = "IChatBaseComponent$ChatSerializer";
+	private static final Pattern AMPERSAND_CODE = Pattern.compile("&(?=[0-9a-fk-orA-FK-OR])");
+	private static final LegacyComponentSerializer LEGACY = LegacyComponentSerializer.legacySection();
 
-			if (nmsClassString.equals("EnumTitleAction"))
-				nmsClassString = "PacketPlayOutTitle$EnumTitleAction";
-		}
-
-		return Class.forName("net.minecraft.server." + CubeRunner.NMS_VERSION + "." + nmsClassString);
+	private Utils() {
 	}
 
-	private static void sendPacket(Player p, Object packet) {
-		try {
-			Object player = p.getClass().getMethod("getHandle").invoke(p);
-			Object connection = player.getClass().getField("playerConnection").get(player);
-			connection.getClass().getMethod("sendPacket", getNMSClass("Packet")).invoke(connection, packet);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	public static void sendTitle(Player p, String title, String subtitle, int paramInt1, int paramInt2, int paramInt3) {
-		try {
-			Object titleEnum = getNMSClass("EnumTitleAction").getEnumConstants()[0];
-			Object subtitleEnum = getNMSClass("EnumTitleAction").getEnumConstants()[1];
-
-			Object timePacket = getNMSClass("PacketPlayOutTitle").getConstructor(int.class, int.class, int.class)
-					.newInstance(paramInt1, paramInt2, paramInt3);
-			Object titlePacket = getNMSClass("PacketPlayOutTitle")
-					.getConstructor(getNMSClass("EnumTitleAction"),
-							getNMSClass("IChatBaseComponent"))
-					.newInstance(titleEnum, getJsonMessage(title));
-			Object subtitlePacket = getNMSClass("PacketPlayOutTitle")
-					.getConstructor(getNMSClass("EnumTitleAction"),
-							getNMSClass("IChatBaseComponent"))
-					.newInstance(subtitleEnum, getJsonMessage(subtitle));
-
-			sendPacket(p, timePacket);
-			sendPacket(p, titlePacket);
-			sendPacket(p, subtitlePacket);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	private static Object getJsonMessage(String json) throws Exception {
-		return getNMSClass("ChatSerializer").getMethod("a", String.class).invoke(null, json);
-	}
-	
+	/** Translates {@code &} color codes to {@code §} codes. */
 	public static String color(String string) {
-		return ChatColor.translateAlternateColorCodes('&', string);
+		return string == null ? null : AMPERSAND_CODE.matcher(string).replaceAll("§");
+	}
+
+	/** A legacy string ({@code &} or {@code §} codes) as a component. */
+	public static Component text(String legacy) {
+		return legacy == null ? Component.empty() : LEGACY.deserialize(color(legacy));
+	}
+
+	public static List<Component> text(List<String> legacy) {
+		List<Component> components = new ArrayList<>(legacy.size());
+		for (String line : legacy)
+			components.add(text(line));
+		return components;
+	}
+
+	/** A component back to a {@code §}-coded string. */
+	public static String legacy(Component component) {
+		return component == null ? null : LEGACY.serialize(component);
+	}
+
+	public static List<String> legacy(List<Component> components) {
+		List<String> lines = new ArrayList<>(components.size());
+		for (Component component : components)
+			lines.add(legacy(component));
+		return lines;
+	}
+
+	/** The text without any color codes. */
+	public static String strip(String string) {
+		return PlainTextComponentSerializer.plainText().serialize(text(string));
+	}
+
+	public static String strip(Component component) {
+		return PlainTextComponentSerializer.plainText().serialize(component);
 	}
 
 	public static boolean isEqualOnColorStrip(String l2, String l1) {
-		return ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', l1))
-				.equalsIgnoreCase(ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', l2)));
+		return strip(l1).equalsIgnoreCase(strip(l2));
 	}
 
-	public static String strip(String string) {
-		return ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', string));
+	public static void sendMessage(Player player, String legacy) {
+		player.sendMessage(text(legacy));
 	}
 
+	/** The countdown title: the number in bold gold, the subtitle in italic gray. Times are in ticks. */
+	public static void sendCountdownTitle(Player player, int seconds, String subtitle, int fadeIn, int stay,
+			int fadeOut) {
+		Component title = Component.text(seconds, NamedTextColor.GOLD, TextDecoration.BOLD);
+		Component sub = Component.text(subtitle, NamedTextColor.GRAY, TextDecoration.ITALIC);
+		player.showTitle(Title.title(title, sub,
+				Title.Times.times(ticks(fadeIn), ticks(stay), ticks(fadeOut))));
+	}
+
+	private static Duration ticks(int ticks) {
+		return Duration.ofMillis(ticks * 50L);
+	}
 }

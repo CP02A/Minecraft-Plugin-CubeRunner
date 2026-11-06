@@ -6,17 +6,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+/**
+ * A mutable item description that the GUIs build up and turn into an {@link ItemStack}.
+ *
+ * <p>Before the flattening, colored items were a material plus a data value ({@code WOOL:5}); now every
+ * variant is its own {@link Material}, so there is no data value any more.
+ */
 public class ItemStackManager {
 
 	protected Material material;
 	protected int amount = 1;
-	protected short durability = 0;
 
 	protected String name;
 	protected List<String> lore = new ArrayList<String>();
@@ -29,20 +33,21 @@ public class ItemStackManager {
 	public ItemStackManager(ItemStack itemStack) {
 		this.material = itemStack.getType();
 		this.amount = itemStack.getAmount();
-		this.durability = itemStack.getDurability();
 
 		ItemMeta meta = itemStack.getItemMeta();
-		this.name = meta.hasDisplayName() ? meta.getDisplayName() : null;
-		this.enchantments = meta.hasEnchants() ? meta.getEnchants() : new HashMap<Enchantment, Integer>();
-		this.lore = meta.hasLore() ? meta.getLore() : null;
+		this.name = meta.hasDisplayName() ? Utils.legacy(meta.displayName()) : null;
+		this.enchantments = meta.hasEnchants() ? new HashMap<>(meta.getEnchants()) : new HashMap<Enchantment, Integer>();
+		this.lore = meta.hasLore() ? Utils.legacy(meta.lore()) : new ArrayList<String>();
 	}
 
 	public ItemStack getItem() {
-		ItemStack itemStack = new ItemStack(material, amount, durability);
+		ItemStack itemStack = new ItemStack(material, amount);
 
 		ItemMeta meta = itemStack.getItemMeta();
-		meta.setDisplayName(name);
-		meta.setLore(lore);
+		if (name != null)
+			meta.displayName(Utils.text(name));
+		if (lore != null && !lore.isEmpty())
+			meta.lore(Utils.text(lore));
 		for (Entry<Enchantment, Integer> enchantment : enchantments.entrySet())
 			meta.addEnchant(enchantment.getKey(), enchantment.getValue(), true);
 
@@ -54,21 +59,19 @@ public class ItemStackManager {
 		if (material != itemStack.getType())
 			return false;
 
-		if (durability != itemStack.getDurability())
-			return false;
-
-		if (itemStack.getItemMeta().hasDisplayName()) {
+		ItemMeta meta = itemStack.getItemMeta();
+		if (meta.hasDisplayName()) {
 			if (name == null)
 				return false;
-			
-			if (!Utils.isEqualOnColorStrip(itemStack.getItemMeta().getDisplayName(), name))
+
+			if (!Utils.isEqualOnColorStrip(Utils.legacy(meta.displayName()), name))
 				return false;
-			
+
 		} else if (name != null)
 			return false;
 
-		if (itemStack.getItemMeta().hasEnchants()) {
-			for (Entry<Enchantment, Integer> enchantment : itemStack.getItemMeta().getEnchants().entrySet())
+		if (meta.hasEnchants()) {
+			for (Entry<Enchantment, Integer> enchantment : meta.getEnchants().entrySet())
 				if (!hasEnchantement(enchantment.getKey(), enchantment.getValue()))
 					return false;
 		} else if (enchantments.size() > 0)
@@ -77,16 +80,16 @@ public class ItemStackManager {
 		return true;
 	}
 
-	public void setData(short durability) {
-		this.durability = durability;
+	public void setMaterial(Material material) {
+		this.material = material;
 	}
 
 	public void setDisplayName(String displayName) {
-		this.name = ChatColor.translateAlternateColorCodes('&', displayName);
+		this.name = Utils.color(displayName);
 	}
 
 	public void addToLore(String loreLine) {
-		lore.add(ChatColor.translateAlternateColorCodes('&', loreLine));
+		lore.add(Utils.color(loreLine));
 	}
 
 	public void setLore(List<String> lore) {
@@ -117,27 +120,13 @@ public class ItemStackManager {
 		return material;
 	}
 
-	public short getDurability() {
-		return durability;
-	}
-
 	public boolean hasEnchantement(Enchantment enchantement) {
-		for (Entry<Enchantment, Integer> entry : enchantments.entrySet())
-			if (entry.getKey() == enchantement)
-				return true;
-
-		return false;
+		return enchantments.containsKey(enchantement);
 	}
 
 	public boolean hasEnchantement(Enchantment enchantement, int value) {
-		for (Entry<Enchantment, Integer> entry : enchantments.entrySet())
-			if (entry.getKey() == enchantement)
-				if (entry.getValue() == value)
-					return true;
-				else
-					return false;
-
-		return false;
+		Integer level = enchantments.get(enchantement);
+		return level != null && level == value;
 	}
 
 	public String getDisplayName() {

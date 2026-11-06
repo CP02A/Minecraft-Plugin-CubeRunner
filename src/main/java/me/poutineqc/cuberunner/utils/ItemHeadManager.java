@@ -1,16 +1,22 @@
 package me.poutineqc.cuberunner.utils;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
+import com.destroystokyo.paper.profile.PlayerProfile;
+
+/**
+ * A player head. In 1.8-1.12 this was {@code SKULL_ITEM:3} with an owner name; now it is
+ * {@link Material#PLAYER_HEAD} with a name-only {@link PlayerProfile}, which the client resolves to a skin.
+ */
 public class ItemHeadManager extends ItemStackManager {
 
 	private String playerName;
 
 	public ItemHeadManager(String playerName) {
-		super(Material.SKULL_ITEM);
-		this.durability = 3;
+		super(Material.PLAYER_HEAD);
 		this.playerName = playerName;
 	}
 
@@ -18,12 +24,12 @@ public class ItemHeadManager extends ItemStackManager {
 		super(itemStack);
 
 		SkullMeta meta = (SkullMeta) itemStack.getItemMeta();
-		this.playerName = meta.hasOwner() ? meta.getOwner() : null;
+		PlayerProfile profile = meta.getPlayerProfile();
+		this.playerName = profile != null ? profile.getName() : null;
 	}
 
 	public ItemHeadManager() {
-		super(Material.SKULL_ITEM);
-		this.durability = 3;
+		super(Material.PLAYER_HEAD);
 	}
 
 	@Override
@@ -31,7 +37,7 @@ public class ItemHeadManager extends ItemStackManager {
 		ItemStack itemStack = super.getItem();
 		SkullMeta meta = (SkullMeta) itemStack.getItemMeta();
 		if (playerName != null)
-			meta.setOwner(playerName);
+			meta.setPlayerProfile(Bukkit.createProfile(playerName));
 
 		itemStack.setItemMeta(meta);
 		return itemStack;
@@ -42,14 +48,13 @@ public class ItemHeadManager extends ItemStackManager {
 		if (!super.isSame(itemStack))
 			return false;
 
-		if (durability != 3)
-			return true;
-
 		SkullMeta meta = (SkullMeta) itemStack.getItemMeta();
-		if (meta.hasOwner()) {
+		PlayerProfile profile = meta.getPlayerProfile();
+		String owner = profile != null ? profile.getName() : null;
+		if (owner != null) {
 			if (playerName == null)
 				return false;
-			else if (!meta.getOwner().equalsIgnoreCase(playerName))
+			else if (!owner.equalsIgnoreCase(playerName))
 				return false;
 		} else if (playerName != null)
 			return false;

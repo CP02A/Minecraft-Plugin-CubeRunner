@@ -47,8 +47,7 @@ public class CRInventoryChallenge extends CRInventory {
 		 * Glass Spacer
 		 ***************************************************/
 
-		icon = new InventoryItem(new ItemStackManager(Material.STAINED_GLASS_PANE));
-		icon.getItem().setData((short) 10);
+		icon = new InventoryItem(new ItemStackManager(Material.PURPLE_STAINED_GLASS_PANE));
 		icon.getItem().setDisplayName(ChatColor.RED + "");
 
 		for (int i = 0; i < inventory.getSize(); i++)
@@ -113,9 +112,8 @@ public class CRInventoryChallenge extends CRInventory {
 			if (location == 22)
 				location++;
 			
-			icon = new InventoryItem(new ItemStackManager(Material.INK_SACK));
 			boolean done = crPlayer.hasChallenge(challenge.getKey().getCrStats());
-			icon.getItem().setData(done ? (short) 10 : (short) 8);
+			icon = new InventoryItem(new ItemStackManager(done ? Material.LIME_DYE : Material.GRAY_DYE));
 			icon.getItem().setDisplayName(
 					(done ? (ChatColor.GREEN + "") : (ChatColor.RED + "")) + Utils.strip(local.get(challenge.getKey().getMessage())));
 			icon.getItem().addToLore(ChatColor.YELLOW + "----------------------------");

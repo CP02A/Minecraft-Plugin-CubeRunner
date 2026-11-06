@@ -13,6 +13,7 @@ import me.poutineqc.cuberunner.Language.Messages;
 import me.poutineqc.cuberunner.commands.InventoryItem;
 import me.poutineqc.cuberunner.game.Arena;
 import me.poutineqc.cuberunner.game.GameState;
+import me.poutineqc.cuberunner.utils.ColorBlocks;
 import me.poutineqc.cuberunner.utils.ItemStackManager;
 
 public class CRInventoryColor extends CRInventory {
@@ -50,8 +51,7 @@ public class CRInventoryColor extends CRInventory {
 		 * Glass Spacer
 		 ***************************************************/
 
-		icon = new InventoryItem(new ItemStackManager(Material.STAINED_GLASS_PANE));
-		icon.getItem().setData((short) 10);
+		icon = new InventoryItem(new ItemStackManager(Material.PURPLE_STAINED_GLASS_PANE));
 		icon.getItem().setDisplayName(ChatColor.RED + "");
 
 		for (int i = 0; i < inventory.getSize(); i++)
@@ -93,7 +93,7 @@ public class CRInventoryColor extends CRInventory {
 
 	@Override
 	public void update(ItemStack itemStack, InventoryAction action) {
-		if (itemStack.getType() != Material.STAINED_CLAY && itemStack.getType() != Material.WOOL)
+		if (itemStack == null || !ColorBlocks.isColorBlock(itemStack.getType()))
 			return;
 		
 		if (arena.getGameState() == GameState.ACTIVE || arena.getGameState() == GameState.ENDING) {
@@ -103,16 +103,11 @@ public class CRInventoryColor extends CRInventory {
 			return;
 		}
 		
-		int valueOfItem = itemStack.getDurability();
-		if (itemStack.getType() == Material.STAINED_CLAY)
-			valueOfItem += 16;
-
+		long bit = 1L << ColorBlocks.bitOf(itemStack.getType());
 		if (itemStack.getItemMeta().hasEnchants()) {
-			arena.getColorManager()
-					.setColorIndice(arena.getColorManager().getColorIndice() - (int) Math.pow(2, valueOfItem));
+			arena.getColorManager().setColorIndice(arena.getColorManager().getColorIndice() & ~bit);
 		} else {
-			arena.getColorManager()
-					.setColorIndice(arena.getColorManager().getColorIndice() + (int) Math.pow(2, valueOfItem));
+			arena.getColorManager().setColorIndice(arena.getColorManager().getColorIndice() | bit);
 		}
 
 		arena.resetArena(itemStack);

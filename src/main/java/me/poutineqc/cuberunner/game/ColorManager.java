@@ -3,12 +3,12 @@ package me.poutineqc.cuberunner.game;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 
 import me.poutineqc.cuberunner.ArenaData;
 import me.poutineqc.cuberunner.CubeRunner;
 import me.poutineqc.cuberunner.MySQL;
+import me.poutineqc.cuberunner.utils.ColorBlocks;
 import me.poutineqc.cuberunner.utils.ItemStackManager;
 
 public class ColorManager {
@@ -44,25 +44,16 @@ public class ColorManager {
 	public void updateLists() {
 		allBlocks = new ArrayList<ItemStackManager>();
 		onlyChoosenBlocks = new ArrayList<ItemStackManager>();
-		long tempColorIndice = colorIndice;
 
-		for (int i = 31; i >= 0; i--) {
-			ItemStackManager icon;
-			if (i >= 16)
-				icon = new ItemStackManager(Material.STAINED_CLAY);
-			else
-				icon = new ItemStackManager(Material.WOOL);
+		for (int i = 0; i < ColorBlocks.COUNT; i++) {
+			ItemStackManager icon = new ItemStackManager(ColorBlocks.get(i));
 
-			icon.setData((short) (i % 16));
-
-			int value = (int) Math.pow(2, i);
-			if (value <= tempColorIndice) {
-				icon.addEnchantement(Enchantment.DURABILITY, 1);
-				tempColorIndice -= value;
-				onlyChoosenBlocks.add(0, icon);
+			if ((colorIndice & (1L << i)) != 0) {
+				icon.addEnchantement(Enchantment.UNBREAKING, 1);
+				onlyChoosenBlocks.add(icon);
 			}
 
-			allBlocks.add(0, icon);
+			allBlocks.add(icon);
 		}
 
 		if (onlyChoosenBlocks.size() == 0)

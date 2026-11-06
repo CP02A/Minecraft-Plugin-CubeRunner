@@ -22,29 +22,21 @@ public class InventoryItem {
 	}
 	
 	public InventoryItem(ItemStack itemStack) {
-		switch (itemStack.getType()) {
-		case SKULL_ITEM:
+		if (itemStack.getType() == Material.PLAYER_HEAD)
 			this.item = new ItemHeadManager(itemStack);
-			break;
-		case BANNER:
+		else if (ItemBannerManager.isBanner(itemStack.getType()))
 			this.item = new ItemBannerManager(itemStack);
-			break;
-		default:
+		else
 			this.item = new ItemStackManager(itemStack);
-		}
 	}
 
 	public InventoryItem(Material material) {
-		switch (material) {
-		case SKULL_ITEM:
+		if (material == Material.PLAYER_HEAD)
 			this.item = new ItemHeadManager();
-			break;
-		case BANNER:
+		else if (ItemBannerManager.isBanner(material))
 			this.item = new ItemBannerManager();
-			break;
-		default:
+		else
 			this.item = new ItemStackManager(material);
-		}
 	}
 
 	public InventoryItem(Material material, int position) {

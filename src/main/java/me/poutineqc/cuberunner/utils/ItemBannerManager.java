@@ -46,15 +46,17 @@ public class ItemBannerManager extends ItemStackManager {
 	}
 
 	public ItemBannerManager() {
-		super(Material.BANNER);
+		super(Material.WHITE_BANNER);
+		baseColor = DyeColor.WHITE;
 	}
 
 	public ItemBannerManager(ItemStack itemStack) {
 		super(itemStack);
 
+		// Since 1.13 the base color is part of the material (WHITE_BANNER, RED_BANNER, ...).
+		baseColor = baseColorOf(itemStack.getType());
 		BannerMeta meta = (BannerMeta) itemStack.getItemMeta();
-		baseColor = meta.getBaseColor();
-		patterns = meta.getPatterns();
+		patterns = new ArrayList<Pattern>(meta.getPatterns());
 	}
 
 	public ItemBannerManager(CustomPattern pattern) {
@@ -62,16 +64,31 @@ public class ItemBannerManager extends ItemStackManager {
 	}
 
 	public ItemBannerManager(CustomPattern pattern, DyeColor dyeColor) {
-		super(Material.BANNER);
-		durability = 0;
+		super(Material.WHITE_BANNER);
 		setPattern(pattern, dyeColor);
+	}
+
+	public static boolean isBanner(Material material) {
+		return baseColorOf(material) != null;
+	}
+
+	private static DyeColor baseColorOf(Material material) {
+		String name = material.name();
+		if (!name.endsWith("_BANNER") || name.endsWith("_WALL_BANNER"))
+			return null;
+
+		try {
+			return DyeColor.valueOf(name.substring(0, name.length() - "_BANNER".length()));
+		} catch (IllegalArgumentException e) {
+			return null;
+		}
 	}
 
 	@Override
 	public ItemStack getItem() {
+		material = ColorBlocks.dyed(baseColor, "BANNER");
 		ItemStack itemStack = super.getItem();
 		BannerMeta meta = (BannerMeta) itemStack.getItemMeta();
-		meta.setBaseColor(baseColor);
 		meta.setPatterns(patterns);
 
 		itemStack.setItemMeta(meta);
@@ -80,19 +97,21 @@ public class ItemBannerManager extends ItemStackManager {
 
 	@Override
 	public boolean isSame(ItemStack itemStack) {
+		material = ColorBlocks.dyed(baseColor, "BANNER");
 		if (!super.isSame(itemStack))
 			return false;
 
-		BannerMeta meta = (BannerMeta) itemStack.getItemMeta();
-		if (meta.getBaseColor() != baseColor)
+		if (baseColorOf(itemStack.getType()) != baseColor)
 			return false;
+
+		BannerMeta meta = (BannerMeta) itemStack.getItemMeta();
 
 		if (meta.getPatterns().size() != patterns.size())
 			return false;
 
 		for (int i = 0; i < patterns.size(); i++) {
 			if (patterns.get(i).getColor() != meta.getPatterns().get(i).getColor()
-					|| patterns.get(i).getPattern() != meta.getPatterns().get(i).getPattern())
+					|| !patterns.get(i).getPattern().equals(meta.getPatterns().get(i).getPattern()))
 				return false;
 		}
 
@@ -120,17 +139,17 @@ public class ItemBannerManager extends ItemStackManager {
 		switch (pattern) {
 		case ARROW_LEFT:
 			baseColor = dyeColor;
-			patterns.add(new Pattern(DyeColor.WHITE, PatternType.RHOMBUS_MIDDLE));
-			patterns.add(new Pattern(dyeColor, PatternType.HALF_VERTICAL_MIRROR));
+			patterns.add(new Pattern(DyeColor.WHITE, PatternType.RHOMBUS));
+			patterns.add(new Pattern(dyeColor, PatternType.HALF_VERTICAL_RIGHT));
 			break;
 		case ARROW_RIGHT:
 			baseColor = dyeColor;
-			patterns.add(new Pattern(DyeColor.WHITE, PatternType.RHOMBUS_MIDDLE));
+			patterns.add(new Pattern(DyeColor.WHITE, PatternType.RHOMBUS));
 			patterns.add(new Pattern(dyeColor, PatternType.HALF_VERTICAL));
 			break;
 		case ARROW_ACTUAL:
 			baseColor = dyeColor;
-			patterns.add(new Pattern(DyeColor.WHITE, PatternType.CIRCLE_MIDDLE));
+			patterns.add(new Pattern(DyeColor.WHITE, PatternType.CIRCLE));
 			break;
 		case SYMBOL_MINUS:
 			baseColor = DyeColor.WHITE;
@@ -176,7 +195,7 @@ public class ItemBannerManager extends ItemStackManager {
 			patterns.add(new Pattern(dyeColor, PatternType.TRIANGLE_BOTTOM));
 			patterns.add(new Pattern(dyeColor, PatternType.SQUARE_TOP_LEFT));
 			patterns.add(new Pattern(dyeColor, PatternType.SQUARE_BOTTOM_RIGHT));
-			patterns.add(new Pattern(DyeColor.WHITE, PatternType.RHOMBUS_MIDDLE));
+			patterns.add(new Pattern(DyeColor.WHITE, PatternType.RHOMBUS));
 			patterns.add(new Pattern(dyeColor, PatternType.STRIPE_DOWNLEFT));
 			patterns.add(new Pattern(DyeColor.WHITE, PatternType.BORDER));
 			break;
@@ -200,10 +219,10 @@ public class ItemBannerManager extends ItemStackManager {
 			break;
 		case FIVE:
 			baseColor = dyeColor;
-			patterns.add(new Pattern(DyeColor.WHITE, PatternType.HALF_VERTICAL_MIRROR));
-			patterns.add(new Pattern(DyeColor.WHITE, PatternType.HALF_HORIZONTAL_MIRROR));
+			patterns.add(new Pattern(DyeColor.WHITE, PatternType.HALF_VERTICAL_RIGHT));
+			patterns.add(new Pattern(DyeColor.WHITE, PatternType.HALF_HORIZONTAL_BOTTOM));
 			patterns.add(new Pattern(dyeColor, PatternType.STRIPE_BOTTOM));
-			patterns.add(new Pattern(DyeColor.WHITE, PatternType.DIAGONAL_RIGHT_MIRROR));
+			patterns.add(new Pattern(DyeColor.WHITE, PatternType.DIAGONAL_UP_RIGHT));
 			patterns.add(new Pattern(dyeColor, PatternType.STRIPE_DOWNRIGHT));
 			patterns.add(new Pattern(dyeColor, PatternType.STRIPE_TOP));
 			patterns.add(new Pattern(DyeColor.WHITE, PatternType.BORDER));
@@ -237,7 +256,7 @@ public class ItemBannerManager extends ItemStackManager {
 		case NINE:
 			baseColor = DyeColor.WHITE;
 			patterns.add(new Pattern(dyeColor, PatternType.STRIPE_LEFT));
-			patterns.add(new Pattern(DyeColor.WHITE, PatternType.HALF_HORIZONTAL_MIRROR));
+			patterns.add(new Pattern(DyeColor.WHITE, PatternType.HALF_HORIZONTAL_BOTTOM));
 			patterns.add(new Pattern(dyeColor, PatternType.STRIPE_MIDDLE));
 			patterns.add(new Pattern(dyeColor, PatternType.STRIPE_TOP));
 			patterns.add(new Pattern(dyeColor, PatternType.STRIPE_RIGHT));
