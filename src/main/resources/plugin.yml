@@ -1,11 +1,14 @@
 name: CubeRunner
 main : me.poutineqc.cuberunner.CubeRunner
-version: 2.5.2
+version: '${version}'
+api-version: '26.3'
 description: Blocks are falling over your head! Can you outrun them?
-load: postworld
+load: POSTWORLD
 author: PoutineQc
-database: false
+contributors: [Nyvo]
+website: https://github.com/CP02A/Minecraft-Plugin-CubeRunner
 prefix: CR
+softdepend: [WorldEdit, FastAsyncWorldEdit, Vault]
 
 commands:
   cuberunner:
@@ -110,6 +113,6 @@ permissions:
   cuberunner.admin.edit.amountplayer.minplayer:
     description: Allows to edit the minimum amount of player for an arena
     default: op
-  cuberunner.admin.edit.amountplayer.minplayer:
+  cuberunner.admin.edit.amountplayer.maxplayer:
     description: Allows to edit the maximum amount of player for an arena
     default: op
