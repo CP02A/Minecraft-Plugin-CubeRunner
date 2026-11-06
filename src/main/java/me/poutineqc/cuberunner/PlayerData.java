@@ -1,7 +1,5 @@
 package me.poutineqc.cuberunner;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,16 +50,10 @@ public final class PlayerData implements Listener {
 
 	private void loadExistingPlayers(CubeRunner plugin) {
 		if (plugin.getMySQL().hasConnection()) {
-			ResultSet query = plugin.getMySQL().queryAll();
-
-			try {
-				while (query.next()) {
-					CRPlayer player = new CRPlayer(query);
-					players.put(player.getUUID(), player);
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+			plugin.getMySQL().queryAllPlayers(row -> {
+				CRPlayer player = new CRPlayer(row);
+				players.put(player.getUUID(), player);
+			});
 
 		} else {
 			playerData = new MinecraftConfiguration(null, "playerData", false);

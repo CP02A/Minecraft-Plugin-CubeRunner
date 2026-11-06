@@ -68,6 +68,12 @@ public class Configuration {
 			password = config.getString("password");
 			database = config.getString("database");
 			tablePrefix = config.getString("tablePrefix", "cuberunner_");
+			// Table names can't be bound as SQL parameters, so only allow safe identifier characters.
+			if (tablePrefix == null || !tablePrefix.matches("[A-Za-z0-9_]*")) {
+				plugin.getLogger().warning("tablePrefix may only contain letters, digits and underscores. "
+						+ "Using 'cuberunner_' instead.");
+				tablePrefix = "cuberunner_";
+			}
 		}
 		
 		prefixInFrontOfEveryMessages = config.getBoolean("prefixInFrontOfEveryMessages", true);

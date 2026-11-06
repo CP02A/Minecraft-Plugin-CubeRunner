@@ -65,6 +65,11 @@ Gradle downloads the Java 25 toolchain itself. Versions live in `gradle.properti
   attribute, component inventory titles, `Sound.UI_BUTTON_CLICK`.
 - **Removed:** MCStats metrics (the service is offline) and the Spigot update checker (it pointed at the original
   resource). The `checkForUpdates` config option is gone.
+- **MySQL: prepared statements.** Every query is a `PreparedStatement` with its values bound as parameters
+  (`MySQL.update(sql, params...)`, `MySQL.query(sql, rowHandler, params...)`), and statements and result sets are
+  closed. Before, values were concatenated into the SQL and statements leaked. Table names can't be parameters, so
+  `tablePrefix` is limited to letters, digits and underscores (anything else falls back to `cuberunner_` with a
+  warning). Column names come only from the `CRStats` enum. Stats are bound with their real types instead of as strings.
 - **plugin.yml:** `api-version: '26.3'` and `softdepend: [WorldEdit, FastAsyncWorldEdit, Vault]`. The duplicated
   `amountplayer.minplayer` key is fixed (the second one was meant to be `maxplayer`; modern SnakeYAML rejects duplicate keys).
 
@@ -75,6 +80,7 @@ Gradle downloads the Java 25 toolchain itself. Versions live in `gradle.properti
 - Changing the min/max players left the old sidebar line behind.
 - Eliminating a hiding player during the block shower could throw a `ConcurrentModificationException`.
 - Clicking an empty slot in a CubeRunner GUI threw an NPE, and so did a kill credit for a player who had already left.
+- Any arena or player name containing an apostrophe broke its MySQL queries (and allowed SQL injection).
 
 ## Verified
 
@@ -85,10 +91,15 @@ Gradle downloads the Java 25 toolchain itself. Versions live in `gradle.properti
   - every banner pattern and player heads round-trip through `ItemStack`;
   - a falling cube spawns with the expected block data, damage settings, no-drop flag, target tag and push.
 
+- MySQL storage was tested on MySQL 8.4 (Docker) with Paper's bundled driver:
+  - the tables are created on first start;
+  - an arena named `it's a trap` loads and saves its color mask (including bit 31);
+  - player stats update, and a player renamed to `O'Brien` is stored correctly;
+  - an orphaned sign row is deleted;
+  - a player named `x'); DROP TABLE canary; --` is stored literally, and the canary table survives.
+
 ## Not verified yet / known limitations
 
 - **No in-game playtest yet.** It still needs checking that cubes land and crush players, along with the GUIs, signs,
-  achievements, Vault rewards and MySQL storage.
-- MySQL queries are still built by string concatenation, as in the original. Arena and player names come from
-  admins and Mojang usernames, but a move to prepared statements would be safer.
+  achievements and Vault rewards.
 - WorldEdit 7.4.6 is the compile target. Use whichever WorldEdit/FAWE build supports your server version.

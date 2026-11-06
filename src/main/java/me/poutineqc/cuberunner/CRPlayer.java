@@ -80,7 +80,7 @@ public class CRPlayer {
 
 	private void updateInformation(CRStats key, double value) {
 		if (CubeRunner.get().getMySQL().hasConnection())
-			CubeRunner.get().getMySQL().updatePlayer(uuid, key, String.valueOf(value));
+			CubeRunner.get().getMySQL().updatePlayer(uuid, key, value);
 		else {
 			CubeRunner.get().getPlayerConfig().get().set("players." + uuid.toString() + "." + key.getNameFlatFile(),
 					value);
@@ -90,7 +90,7 @@ public class CRPlayer {
 
 	private void updateInformation(CRStats key, int value) {
 		if (CubeRunner.get().getMySQL().hasConnection())
-			CubeRunner.get().getMySQL().updatePlayer(uuid, key, String.valueOf(value));
+			CubeRunner.get().getMySQL().updatePlayer(uuid, key, value);
 		else {
 			CubeRunner.get().getPlayerConfig().get().set("players." + uuid.toString() + "." + key.getNameFlatFile(),
 					value);
@@ -100,7 +100,7 @@ public class CRPlayer {
 
 	private void updateInformation(CRStats key, boolean value) {
 		if (CubeRunner.get().getMySQL().hasConnection())
-			CubeRunner.get().getMySQL().updatePlayer(uuid, key, value ? "1" : "0");
+			CubeRunner.get().getMySQL().updatePlayer(uuid, key, value);
 		else {
 			CubeRunner.get().getPlayerConfig().get().set("players." + uuid.toString() + "." + key.getNameFlatFile(),
 					value);

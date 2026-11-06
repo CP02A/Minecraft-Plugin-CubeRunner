@@ -1,7 +1,5 @@
 package me.poutineqc.cuberunner.commands.signs;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -49,9 +47,7 @@ public abstract class CRSign {
 		signs.clear();
 
 		if (mysql.hasConnection()) {
-			ResultSet query = mysql.query("SELECT * FROM " + config.tablePrefix + "SIGNS;");
-			try {
-				while (query.next()) {
+			mysql.query("SELECT * FROM " + mysql.table(MySQL.SIGNS), query -> {
 					UUID uuid = UUID.fromString(query.getString("uuid"));
 					Location location = new Location(Bukkit.getWorld(query.getString("locationWorld")),
 							query.getInt("locationX"), query.getInt("locationY"), query.getInt("locationZ"));
@@ -81,10 +77,7 @@ public abstract class CRSign {
 					} catch (IllegalArgumentException e) {
 						CRSign.removeSign(uuid, location);
 					}
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+			});
 		} else {
 			if (!signData.get().contains("signs"))
 				return;
@@ -134,10 +127,10 @@ public abstract class CRSign {
 		this.location = location;
 
 		if (mysql.hasConnection()) {
-			mysql.update("INSERT INTO " + config.tablePrefix
-					+ "SIGNS (uuid, type ,locationWorld, locationX, locationY, locationZ) " + "VALUES ('" + uuid + "','"
-					+ type.name() + "','" + location.getWorld().getName() + "','" + location.getBlockX() + "','"
-					+ location.getBlockY() + "','" + location.getBlockZ() + "');");
+			mysql.update("INSERT INTO " + mysql.table(MySQL.SIGNS)
+					+ " (uuid, type, locationWorld, locationX, locationY, locationZ) VALUES (?, ?, ?, ?, ?, ?)",
+					uuid.toString(), type.name(), location.getWorld().getName(), location.getBlockX(),
+					location.getBlockY(), location.getBlockZ());
 
 		} else {
 			signData.get().set("signs." + uuid.toString() + ".type", type.name());
@@ -161,7 +154,7 @@ public abstract class CRSign {
 		}
 
 		if (mysql.hasConnection()) {
-			mysql.update("DELETE FROM " + config.tablePrefix + "SIGNS WHERE uuid='" + uuid.toString() + "';");
+			mysql.update("DELETE FROM " + mysql.table(MySQL.SIGNS) + " WHERE uuid = ?", uuid.toString());
 		} else {
 			signData.get().set("signs." + uuid.toString(), null);
 			signData.save();

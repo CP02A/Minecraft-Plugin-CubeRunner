@@ -33,8 +33,8 @@ public class ColorManager {
 		updateLists();
 
 		if (mysql.hasConnection()) {
-			mysql.update("UPDATE " + CubeRunner.get().getConfiguration().tablePrefix + "ARENAS SET colorIndice="
-					+ colorIndice + " WHERE name='" + arena.getName() + "';");
+			mysql.update("UPDATE " + mysql.table(MySQL.ARENAS) + " SET colorIndice = ? WHERE name = ?", colorIndice,
+					arena.getName());
 		} else {
 			arenaData.getData().set("arenas." + arena.getName() + ".colorIndice", colorIndice);
 			arenaData.saveArenaData();
