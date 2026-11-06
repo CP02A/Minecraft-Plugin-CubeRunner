@@ -104,11 +104,3 @@ commands:
 #  - send %all% hub
 #  - minecraft:tell @a %prefix% The CubeRunner's arena %arena% is now ready for a new game
 #  - minecraft:weather clear
-
-############################################################
-# +------------------------------------------------------+ #
-# |                      Updates                         | #
-# +------------------------------------------------------+ #
-############################################################
-
-checkForUpdates: true

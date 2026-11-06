@@ -35,7 +35,6 @@ public class Configuration {
 	public boolean broadcastEndingSingle;
 	public boolean broadcastEndingMulti;
 	
-	public boolean lookForUpdates;
 	public boolean economyRewards;
 	public double pricePerScore;
 	public boolean achievementsRewards;
@@ -71,7 +70,6 @@ public class Configuration {
 			tablePrefix = config.getString("tablePrefix", "cuberunner_");
 		}
 		
-		lookForUpdates = config.getBoolean("checkForUpdates", true);
 		prefixInFrontOfEveryMessages = config.getBoolean("prefixInFrontOfEveryMessages", true);
 		countdownTime = config.getInt("countdownTime", 15);
 		autostart = config.getBoolean("autostart", true);

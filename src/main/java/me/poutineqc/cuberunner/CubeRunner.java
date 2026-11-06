@@ -1,6 +1,5 @@
 package me.poutineqc.cuberunner;
 
-import java.io.IOException;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -35,7 +34,6 @@ public class CubeRunner extends JavaPlugin {
 	private static CubeRunner plugin;
 	public static final String name = "CubeRunner";
 
-	private Updater updater;
 	private Configuration config;
 	private MySQL mysql = new MySQL();
 	private ArenaData arenaData;
@@ -52,10 +50,6 @@ public class CubeRunner extends JavaPlugin {
 		aboveOneNine = NMS_VERSION.startsWith("v1_9") || NMS_VERSION.startsWith("v1_1") || NMS_VERSION.startsWith("v2");
 
 		config = new Configuration(this);
-		if (config.lookForUpdates) {
-			updater = new Updater(this);
-			getServer().getPluginManager().registerEvents(updater, this);
-		}
 
 		if (!initialiseEconomy())
 			return;
@@ -74,14 +68,6 @@ public class CubeRunner extends JavaPlugin {
 
 		enableListeners();
 
-		try {
-			Metrics metrics;
-			metrics = new Metrics(this);
-			metrics.start();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
 		Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
 			@Override
 			public void run() {
@@ -97,9 +83,6 @@ public class CubeRunner extends JavaPlugin {
 		PluginDescriptionFile pdfFile = getDescription();
 		Logger logger = getLogger();
 
-		if (config.lookForUpdates)
-			updater.stop();
-
 		if (mysql.hasConnection())
 			mysql.close();
 		else
@@ -109,12 +92,9 @@ public class CubeRunner extends JavaPlugin {
 	}
 
 	public void reload() {
-		updater.stop();
 		Language.clear();
 
 		config.loadConfiguration(this);
-		if (config.lookForUpdates)
-			updater = new Updater(this);
 
 		if (!initialiseEconomy())
 			return;
