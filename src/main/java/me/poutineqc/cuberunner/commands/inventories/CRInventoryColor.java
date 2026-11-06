@@ -2,7 +2,6 @@ package me.poutineqc.cuberunner.commands.inventories;
 
 import java.util.List;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.inventory.ItemStack;
@@ -15,6 +14,7 @@ import me.poutineqc.cuberunner.game.Arena;
 import me.poutineqc.cuberunner.game.GameState;
 import me.poutineqc.cuberunner.utils.ColorBlocks;
 import me.poutineqc.cuberunner.utils.ItemStackManager;
+import me.poutineqc.cuberunner.utils.LegacyColor;
 
 public class CRInventoryColor extends CRInventory {
 
@@ -52,7 +52,7 @@ public class CRInventoryColor extends CRInventory {
 		 ***************************************************/
 
 		icon = new InventoryItem(new ItemStackManager(Material.PURPLE_STAINED_GLASS_PANE));
-		icon.getItem().setDisplayName(ChatColor.RED + "");
+		icon.getItem().setDisplayName(LegacyColor.RED + "");
 
 		for (int i = 0; i < inventory.getSize(); i++)
 			switch (i) {

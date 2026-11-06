@@ -1,6 +1,5 @@
 package me.poutineqc.cuberunner.listeners;
 
-import org.bukkit.ChatColor;
 import org.bukkit.block.sign.Side;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -18,6 +17,7 @@ import me.poutineqc.cuberunner.commands.signs.CRSignTop;
 import me.poutineqc.cuberunner.game.Arena;
 import me.poutineqc.cuberunner.utils.Permissions;
 import me.poutineqc.cuberunner.utils.SignLines;
+import me.poutineqc.cuberunner.utils.Utils;
 
 public class ListenerSignUpdate implements Listener {
 
@@ -85,27 +85,26 @@ public class ListenerSignUpdate implements Listener {
 	}
 
 	private void setNoPermissionsSign(SignChangeEvent e, Language local) {
-		SignLines.set(e, 0, ChatColor.translateAlternateColorCodes('&', local.get(Messages.SIGN_PERM_0)));
-		SignLines.set(e, 1, ChatColor.translateAlternateColorCodes('&', local.get(Messages.SIGN_PERM_1)));
-		SignLines.set(e, 2, ChatColor.translateAlternateColorCodes('&', local.get(Messages.SIGN_PERM_2)));
-		SignLines.set(e, 3, ChatColor.translateAlternateColorCodes('&', local.get(Messages.SIGN_PERM_3)));
+		SignLines.set(e, 0, Utils.color(local.get(Messages.SIGN_PERM_0)));
+		SignLines.set(e, 1, Utils.color(local.get(Messages.SIGN_PERM_1)));
+		SignLines.set(e, 2, Utils.color(local.get(Messages.SIGN_PERM_2)));
+		SignLines.set(e, 3, Utils.color(local.get(Messages.SIGN_PERM_3)));
 	}
 
 	private void setNoValidSign(SignChangeEvent e, Language local) {
-		SignLines.set(e, 0, ChatColor.translateAlternateColorCodes('&', local.get(Messages.PREFIX_LONG)));
-		SignLines.set(e, 1, ChatColor.translateAlternateColorCodes('&', local.get(Messages.SIGN_VALID_1)));
-		SignLines.set(e, 2, ChatColor.translateAlternateColorCodes('&', local.get(Messages.SIGN_VALID_2)));
-		SignLines.set(e, 3, ChatColor.translateAlternateColorCodes('&', local.get(Messages.SIGN_VALID_3)));
+		SignLines.set(e, 0, Utils.color(local.get(Messages.PREFIX_LONG)));
+		SignLines.set(e, 1, Utils.color(local.get(Messages.SIGN_VALID_1)));
+		SignLines.set(e, 2, Utils.color(local.get(Messages.SIGN_VALID_2)));
+		SignLines.set(e, 3, Utils.color(local.get(Messages.SIGN_VALID_3)));
 	}
 
 	private boolean isPrefixInLine(String line) {
 		Language local = Language.getDefault();
-		String stipedLine = ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', line)).toLowerCase();
+		String stipedLine = Utils.strip(Utils.color(line)).toLowerCase();
 		return stipedLine.contains("[cr]")
-				|| stipedLine.contains(ChatColor
-						.stripColor(ChatColor.translateAlternateColorCodes('&', local.get(Messages.PREFIX_LONG).toLowerCase().trim())))
-				|| stipedLine.contains(ChatColor.stripColor(
-						ChatColor.translateAlternateColorCodes('&', local.get(Messages.PREFIX_SHORT).toLowerCase().trim())));
+				|| stipedLine.contains(Utils.strip(Utils.color(local.get(Messages.PREFIX_LONG).toLowerCase().trim())))
+				|| stipedLine.contains(Utils.strip(
+						Utils.color(local.get(Messages.PREFIX_SHORT).toLowerCase().trim())));
 	}
 
 }

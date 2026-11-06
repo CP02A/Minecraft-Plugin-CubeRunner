@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
-import org.apache.commons.lang3.StringUtils;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import me.poutineqc.cuberunner.CubeRunner;
@@ -28,21 +26,16 @@ public enum CRCommand {
 		public void execute(CubeRunner plugin, Player player, String[] args, Object... extra) {
 			Language local = CubeRunner.get().getLang(player);
 			String cmdValue = extra.length > 0 ? ((extra[0] instanceof String) ? (String) extra[0] : "cr") : "cr";
-			String header = Utils.color("&8&m" + StringUtils.repeat(" ", 15) + "&r&8| &5CubeRunner &d"
-					+ local.get(Messages.KEYWORD_HELP) + "&8&m|" + StringUtils.repeat(" ", 35));
+			String header = Utils.color("&8&m" + " ".repeat(15) + "&r&8| &5CubeRunner &d"
+					+ local.get(Messages.KEYWORD_HELP) + "&8&m|" + " ".repeat(35));
 
 			if (args.length == 1) {
-				player.sendMessage(ChatColor.translateAlternateColorCodes('&', header));
-				player.sendMessage(ChatColor.translateAlternateColorCodes('&',
-						"&5/" + cmdValue + " help general &8- " + local.get(Messages.HELP_DESCRIPTION_GENERALL)));
-				player.sendMessage(ChatColor.translateAlternateColorCodes('&',
-						"&5/" + cmdValue + " help game &8- " + local.get(Messages.HELP_DESCRIPTION_GAME)));
-				player.sendMessage(ChatColor.translateAlternateColorCodes('&',
-						"&5/" + cmdValue + " help arena &8- " + local.get(Messages.HELP_DESCRIPTION_ARENA)));
-				player.sendMessage(ChatColor.translateAlternateColorCodes('&',
-						"&5/" + cmdValue + " help admin &8- " + local.get(Messages.HELP_DESCRIPTION_ADMIN)));
-				player.sendMessage(ChatColor.translateAlternateColorCodes('&',
-						"&5/" + cmdValue + " help all &8- " + local.get(Messages.HELP_DESCRIPTION_ALL)));
+				player.sendMessage(Utils.color(header));
+				player.sendMessage(Utils.color("&5/" + cmdValue + " help general &8- " + local.get(Messages.HELP_DESCRIPTION_GENERALL)));
+				player.sendMessage(Utils.color("&5/" + cmdValue + " help game &8- " + local.get(Messages.HELP_DESCRIPTION_GAME)));
+				player.sendMessage(Utils.color("&5/" + cmdValue + " help arena &8- " + local.get(Messages.HELP_DESCRIPTION_ARENA)));
+				player.sendMessage(Utils.color("&5/" + cmdValue + " help admin &8- " + local.get(Messages.HELP_DESCRIPTION_ADMIN)));
+				player.sendMessage(Utils.color("&5/" + cmdValue + " help all &8- " + local.get(Messages.HELP_DESCRIPTION_ALL)));
 				player.sendMessage("\n");
 				return;
 			}
@@ -95,9 +88,8 @@ public enum CRCommand {
 			if (requestedCommands.size() == 0)
 				pageNumber = 0;
 
-			player.sendMessage(ChatColor.translateAlternateColorCodes('&', header));
-			player.sendMessage(ChatColor.translateAlternateColorCodes('&',
-					"&5" + local.get(Messages.KEYWORD_HELP_CATEGORY) + ": &7"
+			player.sendMessage(Utils.color(header));
+			player.sendMessage(Utils.color("&5" + local.get(Messages.KEYWORD_HELP_CATEGORY) + ": &7"
 							+ (commandType == null ? "ALL" : commandType.toString()) + ", &5"
 							+ local.get(Messages.KEYWORD_HELP_PAGE) + ": &7" + String.valueOf(pageNumber) + "&8/&7"
 							+ (int) (Math.ceil((double) requestedCommands.size() / 3))));
@@ -108,10 +100,8 @@ public enum CRCommand {
 			}
 
 			for (int i = 3 * (pageNumber - 1); i < requestedCommands.size() && i < (3 * (pageNumber - 1)) + 3; i++) {
-				player.sendMessage(ChatColor.translateAlternateColorCodes('&',
-						"&5" + requestedCommands.get(i).getUsage().replace("%command%", cmdValue)));
-				player.sendMessage(ChatColor.translateAlternateColorCodes('&',
-						" &8- &7" + local.get(requestedCommands.get(i).getDescription())));
+				player.sendMessage(Utils.color("&5" + requestedCommands.get(i).getUsage().replace("%command%", cmdValue)));
+				player.sendMessage(Utils.color(" &8- &7" + local.get(requestedCommands.get(i).getDescription())));
 			}
 			player.sendMessage("\n");
 		}

@@ -10,6 +10,7 @@ import me.poutineqc.cuberunner.CRPlayer.PlayerStatsException;
 import me.poutineqc.cuberunner.Language.Messages;
 import me.poutineqc.cuberunner.utils.MinecraftConfiguration;
 import net.milkbowl.vault.economy.Economy;
+import me.poutineqc.cuberunner.utils.Utils;
 
 public class AchievementManager {
 
@@ -81,7 +82,7 @@ public class AchievementManager {
 			for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
 				Language local = CubeRunner.get().getLang(onlinePlayer);
 				local.sendMsg(onlinePlayer, local.get(Messages.ACHIEVEMENT_BROADCAST)
-						.replace("%player%", player.getPlayer().getDisplayName()).replace("%achievementName%",
+						.replace("%player%", Utils.legacy(player.getPlayer().displayName())).replace("%achievementName%",
 								local.get(achievement.achievementMessage).replace("%amount%", String.valueOf(amount))));
 			}
 	}
@@ -116,7 +117,7 @@ public class AchievementManager {
 				Language local = CubeRunner.get().getLang(onlinePlayer);
 				local.sendMsg(onlinePlayer,
 						local.get(Messages.ACHIEVEMENT_BROADCAST)
-								.replace("%player%", player.getPlayer().getDisplayName())
+								.replace("%player%", Utils.legacy(player.getPlayer().displayName()))
 								.replace("%achievementName%", local.get(challenge.message)));
 			}
 	}

@@ -9,6 +9,7 @@ import org.bukkit.util.Vector;
 
 import me.poutineqc.cuberunner.CRPlayer;
 import me.poutineqc.cuberunner.Configuration;
+import me.poutineqc.cuberunner.utils.Utils;
 
 public class User {
 
@@ -28,7 +29,7 @@ public class User {
 
 	public User(Configuration config, CRPlayer player, Arena arena, boolean eliminated, boolean tpAuto) {
 		this.player = player;
-		displayName = player.getPlayer().getDisplayName();
+		displayName = Utils.legacy(player.getPlayer().displayName());
 		this.eliminated = eliminated;
 
 		originalStats = new OriginalPlayerStats(config, player.getPlayer());

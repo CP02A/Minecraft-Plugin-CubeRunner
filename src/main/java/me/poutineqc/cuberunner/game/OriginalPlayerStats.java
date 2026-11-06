@@ -10,6 +10,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.util.Vector;
 
 import me.poutineqc.cuberunner.Configuration;
+import org.bukkit.attribute.Attribute;
 
 public class OriginalPlayerStats {
 
@@ -70,7 +71,7 @@ public class OriginalPlayerStats {
 		player.setLevel(0);
 		player.setExp(0);
 		player.setGameMode(GameMode.ADVENTURE);
-		player.setHealth(player.getMaxHealth());
+		player.setHealth(player.getAttribute(Attribute.MAX_HEALTH).getValue());
 		player.setFoodLevel(20);
 		player.setSaturation(20);
 		for (PotionEffect effect : player.getActivePotionEffects())

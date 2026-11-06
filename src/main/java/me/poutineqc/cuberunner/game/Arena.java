@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -35,6 +34,7 @@ import me.poutineqc.cuberunner.utils.ColorBlocks;
 import me.poutineqc.cuberunner.utils.ItemStackManager;
 import me.poutineqc.cuberunner.utils.Permissions;
 import me.poutineqc.cuberunner.utils.Utils;
+import me.poutineqc.cuberunner.utils.LegacyColor;
 
 public class Arena {
 
@@ -178,12 +178,12 @@ public class Arena {
 	private void resetScoreboard() {
 		Language local = Language.getDefault();
 		scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
-		objective = scoreboard.registerNewObjective(name, Criteria.DUMMY, Utils.text(ChatColor.LIGHT_PURPLE + name
-				+ ChatColor.WHITE + " : " + ChatColor.GREEN + local.get(Messages.KEYWORD_SCOREBOARD_PLAYERS)));
+		objective = scoreboard.registerNewObjective(name, Criteria.DUMMY, Utils.text(LegacyColor.LIGHT_PURPLE + name
+				+ LegacyColor.WHITE + " : " + LegacyColor.GREEN + local.get(Messages.KEYWORD_SCOREBOARD_PLAYERS)));
 		objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-		objective.getScore(ChatColor.GREEN + "-------------------").setScore(1);
-		objective.getScore(ChatColor.GREEN + local.get(Messages.KEYWORD_INFO_BEST_SCORE) + " = "
-				+ ChatColor.LIGHT_PURPLE + String.valueOf(highestScore)).setScore(highestScore);
+		objective.getScore(LegacyColor.GREEN + "-------------------").setScore(1);
+		objective.getScore(LegacyColor.GREEN + local.get(Messages.KEYWORD_INFO_BEST_SCORE) + " = "
+				+ LegacyColor.LIGHT_PURPLE + String.valueOf(highestScore)).setScore(highestScore);
 		objective.getScore(minPlayerLine()).setScore(2);
 		objective.getScore(maxPlayerLine()).setScore(3);
 
@@ -191,15 +191,15 @@ public class Arena {
 
 	private String minPlayerLine() {
 		Language local = Language.getDefault();
-		return ChatColor.GREEN + local.get(Messages.KEYWORD_INFO_MINIMUM) + " "
-				+ local.get(Messages.KEYWORD_SCOREBOARD_PLAYERS) + " = " + ChatColor.LIGHT_PURPLE
+		return LegacyColor.GREEN + local.get(Messages.KEYWORD_INFO_MINIMUM) + " "
+				+ local.get(Messages.KEYWORD_SCOREBOARD_PLAYERS) + " = " + LegacyColor.LIGHT_PURPLE
 				+ String.valueOf(minAmountPlayer);
 	}
 
 	private String maxPlayerLine() {
 		Language local = Language.getDefault();
-		return ChatColor.GREEN + local.get(Messages.KEYWORD_INFO_MAXIMUM) + " "
-				+ local.get(Messages.KEYWORD_SCOREBOARD_PLAYERS) + " = " + ChatColor.LIGHT_PURPLE
+		return LegacyColor.GREEN + local.get(Messages.KEYWORD_INFO_MAXIMUM) + " "
+				+ local.get(Messages.KEYWORD_SCOREBOARD_PLAYERS) + " = " + LegacyColor.LIGHT_PURPLE
 				+ String.valueOf(maxAmountPlayer);
 	}
 
@@ -461,28 +461,22 @@ public class Arena {
 			return;
 
 		player.sendMessage(
-				ChatColor.translateAlternateColorCodes('&',
-						"&8&m" + " ".repeat(5) + "&r &5CubeRunner &d"
+				Utils.color("&8&m" + " ".repeat(5) + "&r &5CubeRunner &d"
 								+ local.get(Messages.KEYWORD_INFO_ADVANCED) + " &5: &d" + name + " &8&m"
 								+ " ".repeat(5)));
-		player.sendMessage(ChatColor.translateAlternateColorCodes('&',
-				"&5" + local.get(Messages.KEYWORD_INFO_WORLD) + ": &7" + world.getName()));
+		player.sendMessage(Utils.color("&5" + local.get(Messages.KEYWORD_INFO_WORLD) + ": &7" + world.getName()));
 		if (lobby == null) {
-			player.sendMessage(ChatColor.translateAlternateColorCodes('&',
-					"&5" + local.get(Messages.KEYWORD_INFO_LOBBY) + ": &7null"));
+			player.sendMessage(Utils.color("&5" + local.get(Messages.KEYWORD_INFO_LOBBY) + ": &7null"));
 		} else {
-			player.sendMessage(ChatColor.translateAlternateColorCodes('&',
-					"&5" + local.get(Messages.KEYWORD_INFO_LOBBY) + ": &7{"
+			player.sendMessage(Utils.color("&5" + local.get(Messages.KEYWORD_INFO_LOBBY) + ": &7{"
 							+ ((int) (lobby.getX() * 100)) / (double) 100 + ", "
 							+ ((int) (lobby.getY() * 100)) / (double) 100 + ", "
 							+ ((int) (lobby.getZ() * 100)) / (double) 100 + "}"));
 		}
 		if (startPoint == null) {
-			player.sendMessage(ChatColor.translateAlternateColorCodes('&',
-					"&5" + local.get(Messages.KEYWORD_INFO_START_POINT) + ": &7null"));
+			player.sendMessage(Utils.color("&5" + local.get(Messages.KEYWORD_INFO_START_POINT) + ": &7null"));
 		} else {
-			player.sendMessage(ChatColor.translateAlternateColorCodes('&',
-					"&5" + local.get(Messages.KEYWORD_INFO_START_POINT) + ": &7{"
+			player.sendMessage(Utils.color("&5" + local.get(Messages.KEYWORD_INFO_START_POINT) + ": &7{"
 							+ ((int) (startPoint.getX() * 100)) / (double) 100 + ", "
 							+ ((int) (startPoint.getY() * 100)) / (double) 100 + ", "
 							+ ((int) (startPoint.getZ() * 100)) / (double) 100 + "}"));
@@ -492,8 +486,7 @@ public class Arena {
 					Utils.color("&5" + local.get(Messages.KEYWORD_INFO_MINIMUM)
 							+ local.get(Messages.KEYWORD_INFO_ZONE_COORDINATE) + ": &7null"));
 		} else {
-			player.sendMessage(ChatColor.translateAlternateColorCodes('&',
-					"&5" + local.get(Messages.KEYWORD_INFO_MINIMUM) + local.get(Messages.KEYWORD_INFO_ZONE_COORDINATE)
+			player.sendMessage(Utils.color("&5" + local.get(Messages.KEYWORD_INFO_MINIMUM) + local.get(Messages.KEYWORD_INFO_ZONE_COORDINATE)
 							+ ": &7{" + minPoint.getBlockX() + ", " + minPoint.getBlockY() + ", " + minPoint.getBlockZ()
 							+ "}"));
 		}
@@ -502,8 +495,7 @@ public class Arena {
 					Utils.color("&5" + local.get(Messages.KEYWORD_INFO_MAXIMUM)
 							+ local.get(Messages.KEYWORD_INFO_ZONE_COORDINATE) + ": &7null"));
 		} else {
-			player.sendMessage(ChatColor.translateAlternateColorCodes('&',
-					"&5" + local.get(Messages.KEYWORD_INFO_MAXIMUM) + local.get(Messages.KEYWORD_INFO_ZONE_COORDINATE)
+			player.sendMessage(Utils.color("&5" + local.get(Messages.KEYWORD_INFO_MAXIMUM) + local.get(Messages.KEYWORD_INFO_ZONE_COORDINATE)
 							+ ": &7{" + maxPoint.getBlockX() + ", " + maxPoint.getBlockY() + ", " + maxPoint.getBlockZ()
 							+ "}"));
 		}
@@ -557,7 +549,7 @@ public class Arena {
 				continue;
 
 			Language localAlt = u.getCRPlayer().getLanguage();
-			localAlt.sendMsg(u, localAlt.get(Messages.JOIN_OTHERS).replace("%player%", player.getDisplayName()));
+			localAlt.sendMsg(u, localAlt.get(Messages.JOIN_OTHERS).replace("%player%", Utils.legacy(player.displayName())));
 		}
 
 		if (gameState == GameState.READY && CubeRunner.get().getConfiguration().autostart
@@ -706,9 +698,9 @@ public class Arena {
 		CRSign.updateSigns(this);
 		multiplayerGame = getAmountOfPlayerInGame() > 1;
 
-		objective.displayName(Utils.text(ChatColor.AQUA + name + ChatColor.WHITE + " : " + ChatColor.GREEN
+		objective.displayName(Utils.text(LegacyColor.AQUA + name + LegacyColor.WHITE + " : " + LegacyColor.GREEN
 				+ local.get(Messages.KEYWORD_SCOREBOARD_SCORE)));
-		objective.getScoreboard().resetScores(ChatColor.GREEN + "-------------------");
+		objective.getScoreboard().resetScores(LegacyColor.GREEN + "-------------------");
 		objective.getScoreboard().resetScores(minPlayerLine());
 		objective.getScoreboard().resetScores(maxPlayerLine());
 

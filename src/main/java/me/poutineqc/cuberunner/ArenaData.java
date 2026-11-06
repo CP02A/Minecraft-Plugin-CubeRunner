@@ -4,9 +4,9 @@ import java.io.File;
 import java.io.IOException;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import me.poutineqc.cuberunner.utils.LegacyColor;
 
 public class ArenaData {
 	
@@ -19,7 +19,7 @@ public class ArenaData {
 			try {
 				arenaFile.createNewFile();
 			} catch (IOException e) {
-				Bukkit.getServer().getLogger().severe(ChatColor.RED + "Could not create arenaData.ylm.");
+				Bukkit.getServer().getLogger().severe(LegacyColor.RED + "Could not create arenaData.ylm.");
 			}
 		}
 		loadArenaData();
@@ -37,7 +37,7 @@ public class ArenaData {
 		try {
 			arenaData.save(arenaFile);
 		} catch (IOException e) {
-			Bukkit.getServer().getLogger().severe(ChatColor.RED + "Could not save arenaData.yml!");
+			Bukkit.getServer().getLogger().severe(LegacyColor.RED + "Could not save arenaData.yml!");
 		}
 	}
 

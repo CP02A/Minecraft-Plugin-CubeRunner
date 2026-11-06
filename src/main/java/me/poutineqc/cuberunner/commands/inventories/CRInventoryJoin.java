@@ -3,7 +3,6 @@ package me.poutineqc.cuberunner.commands.inventories;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.inventory.ItemStack;
@@ -18,6 +17,7 @@ import me.poutineqc.cuberunner.utils.ItemBannerManager;
 import me.poutineqc.cuberunner.utils.ItemBannerManager.CustomPattern;
 import me.poutineqc.cuberunner.utils.ItemStackManager;
 import me.poutineqc.cuberunner.utils.Utils;
+import me.poutineqc.cuberunner.utils.LegacyColor;
 
 public class CRInventoryJoin extends CRInventory {
 
@@ -61,7 +61,7 @@ public class CRInventoryJoin extends CRInventory {
 		 ***************************************************/
 
 		icon = new InventoryItem(new ItemStackManager(Material.PURPLE_STAINED_GLASS_PANE));
-		icon.getItem().setDisplayName(ChatColor.RED + "");
+		icon.getItem().setDisplayName(LegacyColor.RED + "");
 
 		for (int i = 0; i < inventory.getSize(); i++)
 			switch (i) {
@@ -91,19 +91,19 @@ public class CRInventoryJoin extends CRInventory {
 
 			if (arena.getGameState() == GameState.UNREADY) {
 				icon.getItem().setMaterial(Material.GRAY_DYE);
-				icon.getItem().setDisplayName(ChatColor.GOLD + arenas.get(i));
+				icon.getItem().setDisplayName(LegacyColor.GOLD + arenas.get(i));
 				icon.getItem().addToLore(local.get(Messages.KEYWORD_GAMESTATE_UNSET));
 
 			} else if (arena.getGameState() == GameState.ACTIVE || arena.getGameState() == GameState.ENDING) {
 				icon.getItem().setMaterial(Material.LIGHT_BLUE_DYE);
-				icon.getItem().setDisplayName(ChatColor.GOLD + arenas.get(i));
+				icon.getItem().setDisplayName(LegacyColor.GOLD + arenas.get(i));
 				icon.getItem().addToLore(local.get(Messages.KEYWORD_GAMESTATE_ACTIVE));
 
 			} else {
 				icon.getItem().setMaterial(Material.LIME_DYE);
-				icon.getItem().setDisplayName(ChatColor.GOLD + arenas.get(i));
+				icon.getItem().setDisplayName(LegacyColor.GOLD + arenas.get(i));
 				icon.getItem().addToLore(local.get(Messages.KEYWORD_GAMESTATE_READY));
-				icon.getItem().addToLore(ChatColor.YELLOW + local.get(Messages.KEYWORD_SCOREBOARD_PLAYERS) + " : "
+				icon.getItem().addToLore(LegacyColor.YELLOW + local.get(Messages.KEYWORD_SCOREBOARD_PLAYERS) + " : "
 						+ String.valueOf(arena.getAmountOfPlayerInGame()) + "/" + arena.getMaxPlayer());
 			}
 
@@ -153,7 +153,7 @@ public class CRInventoryJoin extends CRInventory {
 	public void update(ItemStack itemStack, InventoryAction action) {
 
 		Language local = crPlayer.getLanguage();
-		String itemName = itemStack.getItemMeta().getDisplayName();
+		String itemName = Utils.legacy(itemStack.getItemMeta().displayName());
 
 		if (Utils.isEqualOnColorStrip(itemName,
 				local.get(Messages.KEYWORD_GUI_PAGE).replace("%number%", String.valueOf(page + 1)))) {
@@ -167,7 +167,7 @@ public class CRInventoryJoin extends CRInventory {
 			return;
 		}
 
-		Arena arena = Arena.getArena(ChatColor.stripColor(itemName));
+		Arena arena = Arena.getArena(Utils.strip(itemName));
 		if (arena == null)
 			return;
 

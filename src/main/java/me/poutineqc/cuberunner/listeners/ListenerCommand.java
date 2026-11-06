@@ -1,6 +1,5 @@
 package me.poutineqc.cuberunner.listeners;
 
-import org.apache.commons.lang3.StringUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -28,10 +27,10 @@ public class ListenerCommand implements CommandExecutor {
 		Language local = CubeRunner.get().getLang(player);
 
 		if (args.length == 0) {
-			player.sendMessage(Utils.color("&8&m" + StringUtils.repeat(" ", 15) + "&r&8| &5CubeRunner " + "&8&m|" + StringUtils.repeat(" ", 40)));
+			player.sendMessage(Utils.color("&8&m" + " ".repeat(15) + "&r&8| &5CubeRunner " + "&8&m|" + " ".repeat(40)));
 			player.sendMessage(Utils
-					.color(local.get(Messages.DEVELOPPER).replace("%developper%", plugin.getDescription().getAuthors().toString())));
-			player.sendMessage(Utils.color(local.get(Messages.VERSION).replace("%version%", plugin.getDescription().getVersion())));
+					.color(local.get(Messages.DEVELOPPER).replace("%developper%", plugin.getPluginMeta().getAuthors().toString())));
+			player.sendMessage(Utils.color(local.get(Messages.VERSION).replace("%version%", plugin.getPluginMeta().getVersion())));
 			player.sendMessage(Utils.color(local.get(Messages.DESCRIPTION).replace("%command%", cmdValue)));
 			player.sendMessage("\n");
 			return true;

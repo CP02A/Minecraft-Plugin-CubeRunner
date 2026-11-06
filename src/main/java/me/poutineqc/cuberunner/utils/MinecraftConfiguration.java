@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -79,7 +78,7 @@ public class MinecraftConfiguration {
 			config.save(file);
 		} catch (IOException e) {
 			Bukkit.getServer().getLogger().severe(
-					ChatColor.RED + "Could not save " + ((file == null) ? "the file." : file.getName() + ".yml."));
+					LegacyColor.RED + "Could not save " + ((file == null) ? "the file." : file.getName() + ".yml."));
 		}
 	}
 

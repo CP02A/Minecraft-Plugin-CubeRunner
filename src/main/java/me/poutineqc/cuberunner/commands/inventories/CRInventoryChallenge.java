@@ -4,7 +4,6 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Map.Entry;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.inventory.ItemStack;
@@ -19,6 +18,7 @@ import me.poutineqc.cuberunner.Language.Messages;
 import me.poutineqc.cuberunner.commands.InventoryItem;
 import me.poutineqc.cuberunner.utils.ItemStackManager;
 import me.poutineqc.cuberunner.utils.Utils;
+import me.poutineqc.cuberunner.utils.LegacyColor;
 
 public class CRInventoryChallenge extends CRInventory {
 
@@ -48,7 +48,7 @@ public class CRInventoryChallenge extends CRInventory {
 		 ***************************************************/
 
 		icon = new InventoryItem(new ItemStackManager(Material.PURPLE_STAINED_GLASS_PANE));
-		icon.getItem().setDisplayName(ChatColor.RED + "");
+		icon.getItem().setDisplayName(LegacyColor.RED + "");
 
 		for (int i = 0; i < inventory.getSize(); i++)
 			switch (i) {
@@ -74,16 +74,16 @@ public class CRInventoryChallenge extends CRInventory {
 		
 		icon = new InventoryItem(new ItemStackManager(Material.PAPER), 4);
 		icon.getItem().setDisplayName(
-				ChatColor.translateAlternateColorCodes('&', local.get(Messages.STATS_GUI_TITLE) + " : CubeRunner"));
+				Utils.color(local.get(Messages.STATS_GUI_TITLE) + " : CubeRunner"));
 
-		icon.getItem().addToLore(ChatColor.STRIKETHROUGH + "" + ChatColor.YELLOW + "----------------------------");
+		icon.getItem().addToLore(LegacyColor.STRIKETHROUGH + "" + LegacyColor.YELLOW + "----------------------------");
 		icon.getItem().addToLore(local.get(Messages.STATS_INFO_AVERAGE_SCORE) + " : &e"
 				+ format2.format(crPlayer.getDouble(CRStats.AVERAGE_SCORE)));
 		icon.getItem()
 				.addToLore(local.get(Messages.STATS_INFO_DISTANCE_RAN) + " : &e"
-						+ format3.format(crPlayer.getDouble(CRStats.TOTAL_DISTANCE) / 1000) + " " + ChatColor.GREEN
+						+ format3.format(crPlayer.getDouble(CRStats.TOTAL_DISTANCE) / 1000) + " " + LegacyColor.GREEN
 						+ local.get(Messages.KEYWORD_GENERAL_DISTANCE));
-		icon.getItem().addToLore(ChatColor.STRIKETHROUGH + "" + ChatColor.YELLOW + "----------------------------");
+		icon.getItem().addToLore(LegacyColor.STRIKETHROUGH + "" + LegacyColor.YELLOW + "----------------------------");
 		icon.getItem().addToLore(
 				local.get(Messages.STATS_INFO_GAMES) + " : &e" + String.valueOf(crPlayer.getInt(CRStats.GAMES_PLAYED)));
 		icon.getItem().addToLore(local.get(Messages.STATS_INFO_TOTAL_SCORE) + " : &e"
@@ -92,13 +92,13 @@ public class CRInventoryChallenge extends CRInventory {
 				local.get(Messages.STATS_INFO_KILLS) + " : &e" + String.valueOf(crPlayer.getInt(CRStats.KILLS)));
 		icon.getItem().addToLore(local.get(Messages.STATS_INFO_MULTIPLAYER_WON) + " : &e"
 				+ String.valueOf(crPlayer.getInt(CRStats.MULTIPLAYER_WON)));
-		icon.getItem().addToLore(ChatColor.STRIKETHROUGH + "" + ChatColor.YELLOW + "----------------------------");
-		icon.getItem().addToLore(ChatColor.LIGHT_PURPLE + Utils.strip(local.get(Messages.STATS_INFO_TIME_PLAYED)) + ": "
+		icon.getItem().addToLore(LegacyColor.STRIKETHROUGH + "" + LegacyColor.YELLOW + "----------------------------");
+		icon.getItem().addToLore(LegacyColor.LIGHT_PURPLE + Utils.strip(local.get(Messages.STATS_INFO_TIME_PLAYED)) + ": "
 				+ getTimePLayed(local, crPlayer.getInt(CRStats.TIME_PLAYED)));
 		if (CubeRunner.get().isEconomyEnabled())
 			icon.getItem()
-					.addToLore(ChatColor.LIGHT_PURPLE + Utils.strip(local.get(Messages.STATS_INFO_MONEY)) + ": &e"
-							+ format2.format(crPlayer.getDouble(CRStats.MONEY)) + ChatColor.GREEN
+					.addToLore(LegacyColor.LIGHT_PURPLE + Utils.strip(local.get(Messages.STATS_INFO_MONEY)) + ": &e"
+							+ format2.format(crPlayer.getDouble(CRStats.MONEY)) + LegacyColor.GREEN
 							+ CubeRunner.get().getEconomy().currencyNamePlural());
 
 		icon.addToInventory(inventory);
@@ -115,17 +115,16 @@ public class CRInventoryChallenge extends CRInventory {
 			boolean done = crPlayer.hasChallenge(challenge.getKey().getCrStats());
 			icon = new InventoryItem(new ItemStackManager(done ? Material.LIME_DYE : Material.GRAY_DYE));
 			icon.getItem().setDisplayName(
-					(done ? (ChatColor.GREEN + "") : (ChatColor.RED + "")) + Utils.strip(local.get(challenge.getKey().getMessage())));
-			icon.getItem().addToLore(ChatColor.YELLOW + "----------------------------");
+					(done ? (LegacyColor.GREEN + "") : (LegacyColor.RED + "")) + Utils.strip(local.get(challenge.getKey().getMessage())));
+			icon.getItem().addToLore(LegacyColor.YELLOW + "----------------------------");
 			icon.getItem()
-					.addToLore(ChatColor.AQUA + Utils.strip(local.get(Messages.KEYWORD_STATS_PROGRESSION)) + ": "
-							+ (done ? (ChatColor.GREEN + Utils.strip(local.get(Messages.KEYWORD_STATS_COMPLETED)))
-									: (ChatColor.RED + Utils.strip(local.get(Messages.KEYWORD_STATS_NOT_COMPLETED)))));
+					.addToLore(LegacyColor.AQUA + Utils.strip(local.get(Messages.KEYWORD_STATS_PROGRESSION)) + ": "
+							+ (done ? (LegacyColor.GREEN + Utils.strip(local.get(Messages.KEYWORD_STATS_COMPLETED)))
+									: (LegacyColor.RED + Utils.strip(local.get(Messages.KEYWORD_STATS_NOT_COMPLETED)))));
 			if (!done && CubeRunner.get().isEconomyEnabled() && CubeRunner.get().getConfiguration().achievementsRewards)
-				icon.getItem().addToLore(ChatColor.AQUA
-						+ ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&',
-								local.get(Messages.KEYWORD_STATS_REWARD) + ": "))
-						+ ChatColor.YELLOW + String.valueOf(challenge.getValue())
+				icon.getItem().addToLore(LegacyColor.AQUA
+						+ Utils.strip(Utils.color(local.get(Messages.KEYWORD_STATS_REWARD) + ": "))
+						+ LegacyColor.YELLOW + String.valueOf(challenge.getValue())
 						+ CubeRunner.get().getEconomy().currencyNamePlural());
 
 			icon.setPosition(location++);
@@ -160,9 +159,9 @@ public class CRInventoryChallenge extends CRInventory {
 			hours++;
 		}
 
-		return ChatColor.YELLOW + String.valueOf(hours) + ChatColor.GREEN + " "
-				+ Utils.strip(local.get(Messages.KEYWORD_GENERAL_HOURS)) + ChatColor.YELLOW + " "
-				+ String.valueOf(timePlayed) + ChatColor.GREEN + " "
+		return LegacyColor.YELLOW + String.valueOf(hours) + LegacyColor.GREEN + " "
+				+ Utils.strip(local.get(Messages.KEYWORD_GENERAL_HOURS)) + LegacyColor.YELLOW + " "
+				+ String.valueOf(timePlayed) + LegacyColor.GREEN + " "
 				+ Utils.strip(local.get(Messages.KEYWORD_GENERAL_MINUTES));
 	}
 
@@ -170,7 +169,7 @@ public class CRInventoryChallenge extends CRInventory {
 	public void update(ItemStack itemStack, InventoryAction action) {
 		Language local = crPlayer.getLanguage();
 
-		if (Utils.isEqualOnColorStrip(itemStack.getItemMeta().getDisplayName(), local.get(Messages.STATS_GUI_TITLE))) {
+		if (Utils.isEqualOnColorStrip(Utils.legacy(itemStack.getItemMeta().displayName()), local.get(Messages.STATS_GUI_TITLE))) {
 			new CRInventoryStats(crPlayer);
 		}
 	}

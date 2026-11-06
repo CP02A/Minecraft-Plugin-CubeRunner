@@ -5,7 +5,6 @@ import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -71,11 +70,10 @@ public class CubeRunner extends JavaPlugin {
 			}
 		}, 0);
 
-		getLogger().info(getDescription().getName() + " has been enabled (v" + getDescription().getVersion() + ")");
+		getLogger().info(getPluginMeta().getName() + " has been enabled (v" + getPluginMeta().getVersion() + ")");
 	}
 
 	public void onDisable() {
-		PluginDescriptionFile pdfFile = getDescription();
 		Logger logger = getLogger();
 
 		if (mysql.hasConnection())
@@ -83,7 +81,7 @@ public class CubeRunner extends JavaPlugin {
 		else
 			arenaData.loadArenaData();
 
-		logger.info(pdfFile.getName() + " has been diabled");
+		logger.info(getPluginMeta().getName() + " has been disabled");
 	}
 
 	public void reload() {
