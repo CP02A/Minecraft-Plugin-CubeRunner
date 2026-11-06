@@ -20,6 +20,7 @@ import me.poutineqc.cuberunner.MySQL;
 import me.poutineqc.cuberunner.PlayerData;
 import me.poutineqc.cuberunner.game.Arena;
 import me.poutineqc.cuberunner.utils.MinecraftConfiguration;
+import me.poutineqc.cuberunner.utils.SignLines;
 
 public abstract class CRSign {
 
@@ -151,10 +152,10 @@ public abstract class CRSign {
 	private static void removeSign(UUID uuid, Location location) {
 		if (location.getBlock().getState() instanceof Sign) {
 			Sign sign = (Sign) location.getBlock().getState();
-			sign.setLine(0, " ");
-			sign.setLine(1, " ");
-			sign.setLine(2, " ");
-			sign.setLine(3, " ");
+			SignLines.set(sign, 0, " ");
+			SignLines.set(sign, 1, " ");
+			SignLines.set(sign, 2, " ");
+			SignLines.set(sign, 3, " ");
 			sign.getLocation().getChunk().load();
 			sign.update();
 		}
@@ -236,7 +237,7 @@ public abstract class CRSign {
 			if (displaySign.arena != arena)
 				continue;
 
-			if (!arena.getName().equalsIgnoreCase(((Sign) dacsign.location.getBlock().getState()).getLine(2)))
+			if (!arena.getName().equalsIgnoreCase(SignLines.get((Sign) dacsign.location.getBlock().getState(), 2)))
 				continue;
 
 			errors.add(dacsign);

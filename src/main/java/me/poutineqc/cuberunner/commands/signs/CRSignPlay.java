@@ -14,6 +14,7 @@ import me.poutineqc.cuberunner.Language.Messages;
 import me.poutineqc.cuberunner.commands.CRCommand;
 import me.poutineqc.cuberunner.game.Arena;
 import me.poutineqc.cuberunner.utils.Permissions;
+import me.poutineqc.cuberunner.utils.SignLines;
 
 public class CRSignPlay extends CRSignPlayers {
 
@@ -23,22 +24,22 @@ public class CRSignPlay extends CRSignPlayers {
 
 		Language local = Language.getDefault();
 
-		event.setLine(0, ChatColor.translateAlternateColorCodes('&', local.get(Messages.PREFIX_LONG)));
-		event.setLine(1, ChatColor.translateAlternateColorCodes('&', local.get(Messages.KEYWORD_SIGN_PLAY)));
+		SignLines.set(event, 0, ChatColor.translateAlternateColorCodes('&', local.get(Messages.PREFIX_LONG)));
+		SignLines.set(event, 1, ChatColor.translateAlternateColorCodes('&', local.get(Messages.KEYWORD_SIGN_PLAY)));
 		switch (arena.getGameState()) {
 		case ACTIVE:
 		case ENDING:
-			event.setLine(3, ChatColor.translateAlternateColorCodes('&', local.get(Messages.KEYWORD_GAMESTATE_ACTIVE)));
+			SignLines.set(event, 3, ChatColor.translateAlternateColorCodes('&', local.get(Messages.KEYWORD_GAMESTATE_ACTIVE)));
 			break;
 		case READY:
 		case STARTUP:
-			event.setLine(3,
+			SignLines.set(event, 3,
 					ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', local.get(Messages.KEYWORD_SCOREBOARD_PLAYERS)))
 							+ " : " + String.valueOf(arena.getAmountOfPlayerInGame()) + "/"
 							+ String.valueOf(arena.getMaxPlayer()));
 			break;
 		case UNREADY:
-			event.setLine(3, ChatColor.translateAlternateColorCodes('&', local.get(Messages.KEYWORD_GAMESTATE_UNSET)));
+			SignLines.set(event, 3, ChatColor.translateAlternateColorCodes('&', local.get(Messages.KEYWORD_GAMESTATE_UNSET)));
 			break;
 		}
 
@@ -58,7 +59,7 @@ public class CRSignPlay extends CRSignPlayers {
 				delete = true;
 			} else {
 				Sign sign = (Sign) block;
-				arena = Arena.getArena(sign.getLine(2));
+				arena = Arena.getArena(SignLines.get(sign, 2));
 				if (arena == null) {
 					delete = true;
 				} else if (arena.getWorld() != location.getWorld()) {
@@ -80,8 +81,8 @@ public class CRSignPlay extends CRSignPlayers {
 
 	@Override
 	protected boolean updateSign(Language local, Sign sign) {
-		sign.setLine(0, ChatColor.translateAlternateColorCodes('&', local.get(Messages.PREFIX_LONG)));
-		sign.setLine(1, ChatColor.translateAlternateColorCodes('&', local.get(Messages.KEYWORD_SIGN_PLAY)));
+		SignLines.set(sign, 0, ChatColor.translateAlternateColorCodes('&', local.get(Messages.PREFIX_LONG)));
+		SignLines.set(sign, 1, ChatColor.translateAlternateColorCodes('&', local.get(Messages.KEYWORD_SIGN_PLAY)));
 		sign.update();
 
 		if (arena == null)

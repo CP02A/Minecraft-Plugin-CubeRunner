@@ -13,6 +13,7 @@ import me.poutineqc.cuberunner.CubeRunner;
 import me.poutineqc.cuberunner.Language;
 import me.poutineqc.cuberunner.Language.Messages;
 import me.poutineqc.cuberunner.game.Arena;
+import me.poutineqc.cuberunner.utils.SignLines;
 
 public class CRSignTop extends CRSignDisplay {
 
@@ -21,9 +22,9 @@ public class CRSignTop extends CRSignDisplay {
 		this.arena = arena;
 
 		Language local = Language.getDefault();
-		event.setLine(0, ChatColor.translateAlternateColorCodes('&', local.get(Messages.PREFIX_LONG)));
-		event.setLine(1, ChatColor.translateAlternateColorCodes('&', local.get(Messages.KEYWORD_SIGN_TOP)));
-		event.setLine(3, arena.getHighestPlayer());
+		SignLines.set(event, 0, ChatColor.translateAlternateColorCodes('&', local.get(Messages.PREFIX_LONG)));
+		SignLines.set(event, 1, ChatColor.translateAlternateColorCodes('&', local.get(Messages.KEYWORD_SIGN_TOP)));
+		SignLines.set(event, 3, arena.getHighestPlayer());
 
 		signs.add(this);
 
@@ -40,7 +41,7 @@ public class CRSignTop extends CRSignDisplay {
 				delete = true;
 			else {
 				Sign sign = (Sign) block;
-				arena = Arena.getArena(sign.getLine(2));
+				arena = Arena.getArena(SignLines.get(sign, 2));
 				if (arena == null)
 					delete = true;
 			}
@@ -58,8 +59,8 @@ public class CRSignTop extends CRSignDisplay {
 
 	@Override
 	protected boolean updateSign(Language local, Sign sign) {
-		sign.setLine(0, ChatColor.translateAlternateColorCodes('&', local.get(Messages.PREFIX_LONG)));
-		sign.setLine(1, ChatColor.translateAlternateColorCodes('&', local.get(Messages.KEYWORD_SIGN_TOP)));
+		SignLines.set(sign, 0, ChatColor.translateAlternateColorCodes('&', local.get(Messages.PREFIX_LONG)));
+		SignLines.set(sign, 1, ChatColor.translateAlternateColorCodes('&', local.get(Messages.KEYWORD_SIGN_TOP)));
 		sign.update();
 
 		if (arena == null)
@@ -71,7 +72,7 @@ public class CRSignTop extends CRSignDisplay {
 
 	@Override
 	protected void updateDisplay(Language local, Sign sign) {
-		sign.setLine(3, arena.getHighestPlayer());
+		SignLines.set(sign, 3, arena.getHighestPlayer());
 		sign.update();
 	}
 

@@ -13,6 +13,7 @@ import me.poutineqc.cuberunner.Language;
 import me.poutineqc.cuberunner.Language.Messages;
 import me.poutineqc.cuberunner.commands.CRCommand;
 import me.poutineqc.cuberunner.utils.Permissions;
+import me.poutineqc.cuberunner.utils.SignLines;
 
 public class CRSignQuit extends CRSign {
 
@@ -20,10 +21,10 @@ public class CRSignQuit extends CRSign {
 		super(event.getBlock().getLocation(), SignType.QUIT);
 
 		Language local = Language.getDefault();
-		event.setLine(0, "");
-		event.setLine(1, ChatColor.translateAlternateColorCodes('&', local.get(Messages.PREFIX_LONG)));
-		event.setLine(2, ChatColor.translateAlternateColorCodes('&', local.get(Messages.KEYWORD_SIGN_QUIT)));
-		event.setLine(3, "");
+		SignLines.set(event, 0, "");
+		SignLines.set(event, 1, ChatColor.translateAlternateColorCodes('&', local.get(Messages.PREFIX_LONG)));
+		SignLines.set(event, 2, ChatColor.translateAlternateColorCodes('&', local.get(Messages.KEYWORD_SIGN_QUIT)));
+		SignLines.set(event, 3, "");
 
 		signs.add(this);
 
@@ -52,8 +53,8 @@ public class CRSignQuit extends CRSign {
 
 	@Override
 	protected boolean updateSign(Language local, Sign sign) {
-		sign.setLine(1, ChatColor.translateAlternateColorCodes('&', local.get(Messages.PREFIX_LONG)));
-		sign.setLine(2, ChatColor.translateAlternateColorCodes('&', local.get(Messages.KEYWORD_SIGN_QUIT)));
+		SignLines.set(sign, 1, ChatColor.translateAlternateColorCodes('&', local.get(Messages.PREFIX_LONG)));
+		SignLines.set(sign, 2, ChatColor.translateAlternateColorCodes('&', local.get(Messages.KEYWORD_SIGN_QUIT)));
 		sign.update();
 
 		return true;

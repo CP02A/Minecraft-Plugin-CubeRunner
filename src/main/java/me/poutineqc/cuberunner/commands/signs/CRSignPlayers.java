@@ -8,6 +8,7 @@ import org.bukkit.block.Sign;
 
 import me.poutineqc.cuberunner.Language;
 import me.poutineqc.cuberunner.Language.Messages;
+import me.poutineqc.cuberunner.utils.SignLines;
 
 public abstract class CRSignPlayers extends CRSignDisplay {
 
@@ -24,17 +25,17 @@ public abstract class CRSignPlayers extends CRSignDisplay {
 		switch (arena.getGameState()) {
 		case ACTIVE:
 		case ENDING:
-			sign.setLine(3, ChatColor.translateAlternateColorCodes('&', local.get(Messages.KEYWORD_GAMESTATE_ACTIVE)));
+			SignLines.set(sign, 3, ChatColor.translateAlternateColorCodes('&', local.get(Messages.KEYWORD_GAMESTATE_ACTIVE)));
 			break;
 		case READY:
 		case STARTUP:
-			sign.setLine(3,
+			SignLines.set(sign, 3,
 					ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', local.get(Messages.KEYWORD_SCOREBOARD_PLAYERS)))
 							+ " : " + String.valueOf(arena.getAmountOfPlayerInGame()) + "/"
 							+ String.valueOf(arena.getMaxPlayer()));
 			break;
 		case UNREADY:
-			sign.setLine(3, ChatColor.translateAlternateColorCodes('&', local.get(Messages.KEYWORD_GAMESTATE_UNSET)));
+			SignLines.set(sign, 3, ChatColor.translateAlternateColorCodes('&', local.get(Messages.KEYWORD_GAMESTATE_UNSET)));
 			break;
 		}
 
