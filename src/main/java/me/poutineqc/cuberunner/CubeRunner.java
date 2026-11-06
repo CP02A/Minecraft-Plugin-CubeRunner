@@ -41,14 +41,9 @@ public class CubeRunner extends JavaPlugin {
 	private AchievementManager achievementManager;
 
 	private Economy economy;
-	public static String NMS_VERSION;
-	public static boolean aboveOneNine;
 
 	public void onEnable() {
 		plugin = this;
-		NMS_VERSION = getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
-		aboveOneNine = NMS_VERSION.startsWith("v1_9") || NMS_VERSION.startsWith("v1_1") || NMS_VERSION.startsWith("v2");
-
 		config = new Configuration(this);
 
 		if (!initialiseEconomy())
@@ -174,9 +169,7 @@ public class CubeRunner extends JavaPlugin {
 		pm.registerEvents(new ListenerSignBreak(), this);
 		pm.registerEvents(new ListenerInventoryClick(), this);
 		pm.registerEvents(new ListenerEntityChangeBlock(), this);
-
-		if (aboveOneNine)
-			pm.registerEvents(new ListenerEntityGlide(), this);
+		pm.registerEvents(new ListenerEntityGlide(), this);
 	}
 
 	public Configuration getConfiguration() {

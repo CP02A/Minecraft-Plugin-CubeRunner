@@ -2,12 +2,11 @@ package me.poutineqc.cuberunner.game;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -17,17 +16,12 @@ import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
+import org.bukkit.scoreboard.Criteria;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.util.Vector;
-
-import com.google.gson.JsonObject;
-import com.sk89q.worldedit.bukkit.WorldEditPlugin;
-import com.sk89q.worldedit.bukkit.selections.Selection;
 
 import me.poutineqc.cuberunner.ArenaData;
 import me.poutineqc.cuberunner.CRPlayer.PlayerStatsException;
@@ -37,6 +31,7 @@ import me.poutineqc.cuberunner.Language;
 import me.poutineqc.cuberunner.Language.Messages;
 import me.poutineqc.cuberunner.MySQL;
 import me.poutineqc.cuberunner.commands.signs.CRSign;
+import me.poutineqc.cuberunner.utils.ColorBlocks;
 import me.poutineqc.cuberunner.utils.ItemStackManager;
 import me.poutineqc.cuberunner.utils.Permissions;
 import me.poutineqc.cuberunner.utils.Utils;
@@ -183,20 +178,29 @@ public class Arena {
 	private void resetScoreboard() {
 		Language local = Language.getDefault();
 		scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
-		objective = scoreboard.registerNewObjective(name, "dummy");
+		objective = scoreboard.registerNewObjective(name, Criteria.DUMMY, Utils.text(ChatColor.LIGHT_PURPLE + name
+				+ ChatColor.WHITE + " : " + ChatColor.GREEN + local.get(Messages.KEYWORD_SCOREBOARD_PLAYERS)));
 		objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-		objective.setDisplayName(ChatColor.LIGHT_PURPLE + name + ChatColor.WHITE + " : " + ChatColor.GREEN
-				+ local.get(Messages.KEYWORD_SCOREBOARD_PLAYERS));
 		objective.getScore(ChatColor.GREEN + "-------------------").setScore(1);
 		objective.getScore(ChatColor.GREEN + local.get(Messages.KEYWORD_INFO_BEST_SCORE) + " = "
 				+ ChatColor.LIGHT_PURPLE + String.valueOf(highestScore)).setScore(highestScore);
-		objective.getScore(ChatColor.GREEN + local.get(Messages.KEYWORD_INFO_MINIMUM) + " "
-				+ local.get(Messages.KEYWORD_SCOREBOARD_PLAYERS) + " = " + ChatColor.LIGHT_PURPLE
-				+ String.valueOf(minAmountPlayer)).setScore(2);
-		objective.getScore(ChatColor.GREEN + local.get(Messages.KEYWORD_INFO_MAXIMUM) + " "
-				+ local.get(Messages.KEYWORD_SCOREBOARD_PLAYERS) + " = " + ChatColor.LIGHT_PURPLE
-				+ String.valueOf(maxAmountPlayer)).setScore(3);
+		objective.getScore(minPlayerLine()).setScore(2);
+		objective.getScore(maxPlayerLine()).setScore(3);
 
+	}
+
+	private String minPlayerLine() {
+		Language local = Language.getDefault();
+		return ChatColor.GREEN + local.get(Messages.KEYWORD_INFO_MINIMUM) + " "
+				+ local.get(Messages.KEYWORD_SCOREBOARD_PLAYERS) + " = " + ChatColor.LIGHT_PURPLE
+				+ String.valueOf(minAmountPlayer);
+	}
+
+	private String maxPlayerLine() {
+		Language local = Language.getDefault();
+		return ChatColor.GREEN + local.get(Messages.KEYWORD_INFO_MAXIMUM) + " "
+				+ local.get(Messages.KEYWORD_SCOREBOARD_PLAYERS) + " = " + ChatColor.LIGHT_PURPLE
+				+ String.valueOf(maxAmountPlayer);
 	}
 
 	public Arena(String name, Player player) {
@@ -261,16 +265,16 @@ public class Arena {
 	public void setArena(Player player) {
 		Language local = CubeRunner.get().getCRPlayer(player).getLanguage();
 
-		Selection s = getWorldEdit().getSelection(player);
+		WorldEditSelection s = WorldEditSelection.isAvailable() ? WorldEditSelection.of(player) : null;
 		if (s == null) {
 			local.sendMsg(player, local.get(Messages.EDIT_REGION_WORLDEDIT));
 			return;
 		}
 
 		gameState = GameState.UNREADY;
-		world = s.getWorld();
-		minPoint = s.getMinimumPoint();
-		maxPoint = s.getMaximumPoint();
+		world = s.world;
+		minPoint = s.minPoint;
+		maxPoint = s.maxPoint;
 		local.sendMsg(player, local.get(Messages.EDIT_REGION).replace("%arena%", name));
 
 		if (mysql.hasConnection()) {
@@ -349,14 +353,6 @@ public class Arena {
 			gameState = GameState.READY;
 	}
 
-	private WorldEditPlugin getWorldEdit() {
-		Plugin p = Bukkit.getPluginManager().getPlugin("WorldEdit");
-		if (p instanceof WorldEditPlugin)
-			return (WorldEditPlugin) p;
-		else
-			return null;
-	}
-
 	public void setMinPlayer(int amount, Player player) {
 		Language local = CubeRunner.get().getCRPlayer(player).getLanguage();
 
@@ -380,11 +376,9 @@ public class Arena {
 			arenaData.saveArenaData();
 		}
 
-		scoreboard.resetScores(ChatColor.GREEN + local.get(Messages.KEYWORD_INFO_MINIMUM) + " = "
-				+ ChatColor.LIGHT_PURPLE + String.valueOf(minAmountPlayer));
+		scoreboard.resetScores(minPlayerLine());
 		minAmountPlayer = amount;
-		objective.getScore(ChatColor.GREEN + local.get(Messages.KEYWORD_INFO_MINIMUM) + " = " + ChatColor.LIGHT_PURPLE
-				+ String.valueOf(minAmountPlayer)).setScore(3);
+		objective.getScore(minPlayerLine()).setScore(2);
 
 		local.sendMsg(player, local.get(Messages.COMMAND_SETMINPLAYER).replace("%arena%", name));
 	}
@@ -412,11 +406,9 @@ public class Arena {
 			arenaData.saveArenaData();
 		}
 
-		scoreboard.resetScores(ChatColor.GREEN + local.get(Messages.KEYWORD_INFO_MAXIMUM) + " = "
-				+ ChatColor.LIGHT_PURPLE + String.valueOf(maxAmountPlayer));
+		scoreboard.resetScores(maxPlayerLine());
 		maxAmountPlayer = amount;
-		objective.getScore(ChatColor.GREEN + local.get(Messages.KEYWORD_INFO_MAXIMUM) + " = " + ChatColor.LIGHT_PURPLE
-				+ String.valueOf(maxAmountPlayer)).setScore(3);
+		objective.getScore(maxPlayerLine()).setScore(3);
 
 		local.sendMsg(player, local.get(Messages.COMMAND_SETMAXPLAYER).replace("%arena%", name));
 	}
@@ -450,18 +442,18 @@ public class Arena {
 		}
 
 		player.sendMessage(
-				ChatColor.translateAlternateColorCodes('&', "&8&m" + StringUtils.repeat(" ", 13) + "&r &5CubeRunner &d"
-						+ local.get(Messages.KEYWORD_INFO) + " &5: &d" + name + " &8&m" + StringUtils.repeat(" ", 13)));
-		player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&5" + local.get(Messages.KEYWORD_INFO_CURRENT)
+				Utils.color("&8&m" + " ".repeat(13) + "&r &5CubeRunner &d"
+						+ local.get(Messages.KEYWORD_INFO) + " &5: &d" + name + " &8&m" + " ".repeat(13)));
+		player.sendMessage(Utils.color("&5" + local.get(Messages.KEYWORD_INFO_CURRENT)
 				+ " " + local.get(Messages.KEYWORD_INFO_GAME_STATE) + ": &7" + stringGameState));
-		player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&5" + local.get(Messages.KEYWORD_INFO_CURRENT)
+		player.sendMessage(Utils.color("&5" + local.get(Messages.KEYWORD_INFO_CURRENT)
 				+ " " + local.get(Messages.KEYWORD_INFO_AMOUNT_OF_PLAYER) + ": &7" + users.size()));
-		player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&5" + local.get(Messages.KEYWORD_INFO_MINIMUM)
+		player.sendMessage(Utils.color("&5" + local.get(Messages.KEYWORD_INFO_MINIMUM)
 				+ " " + local.get(Messages.KEYWORD_INFO_AMOUNT_OF_PLAYER) + ": &7" + minAmountPlayer));
-		player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&5" + local.get(Messages.KEYWORD_INFO_MAXIMUM)
+		player.sendMessage(Utils.color("&5" + local.get(Messages.KEYWORD_INFO_MAXIMUM)
 				+ " " + local.get(Messages.KEYWORD_INFO_AMOUNT_OF_PLAYER) + ": &7" + maxAmountPlayer));
 		player.sendMessage(
-				ChatColor.translateAlternateColorCodes('&', "&5" + local.get(Messages.KEYWORD_INFO_BEST_SCORE) + ": &7"
+				Utils.color("&5" + local.get(Messages.KEYWORD_INFO_BEST_SCORE) + ": &7"
 						+ highestScore + " &5" + local.get(Messages.KEYWORD_GENERAL_BY) + " &7" + highestPlayer));
 		player.sendMessage("\n");
 
@@ -470,9 +462,9 @@ public class Arena {
 
 		player.sendMessage(
 				ChatColor.translateAlternateColorCodes('&',
-						"&8&m" + StringUtils.repeat(" ", 5) + "&r &5CubeRunner &d"
+						"&8&m" + " ".repeat(5) + "&r &5CubeRunner &d"
 								+ local.get(Messages.KEYWORD_INFO_ADVANCED) + " &5: &d" + name + " &8&m"
-								+ StringUtils.repeat(" ", 5)));
+								+ " ".repeat(5)));
 		player.sendMessage(ChatColor.translateAlternateColorCodes('&',
 				"&5" + local.get(Messages.KEYWORD_INFO_WORLD) + ": &7" + world.getName()));
 		if (lobby == null) {
@@ -497,7 +489,7 @@ public class Arena {
 		}
 		if (minPoint == null) {
 			player.sendMessage(
-					ChatColor.translateAlternateColorCodes('&', "&5" + local.get(Messages.KEYWORD_INFO_MINIMUM)
+					Utils.color("&5" + local.get(Messages.KEYWORD_INFO_MINIMUM)
 							+ local.get(Messages.KEYWORD_INFO_ZONE_COORDINATE) + ": &7null"));
 		} else {
 			player.sendMessage(ChatColor.translateAlternateColorCodes('&',
@@ -507,7 +499,7 @@ public class Arena {
 		}
 		if (maxPoint == null) {
 			player.sendMessage(
-					ChatColor.translateAlternateColorCodes('&', "&5" + local.get(Messages.KEYWORD_INFO_MAXIMUM)
+					Utils.color("&5" + local.get(Messages.KEYWORD_INFO_MAXIMUM)
 							+ local.get(Messages.KEYWORD_INFO_ZONE_COORDINATE) + ": &7null"));
 		} else {
 			player.sendMessage(ChatColor.translateAlternateColorCodes('&',
@@ -676,24 +668,11 @@ public class Arena {
 						for (User user : arena.users) {
 							if (cooldownTimer % 20.0 == 0) {
 
-								Sound sound = CubeRunner.aboveOneNine ? Sound.valueOf("UI_BUTTON_CLICK")
-										: Sound.valueOf("CLICK");
-
-								user.getPlayer().playSound(user.getPlayer().getLocation(), sound, 1, 1);
+								user.getPlayer().playSound(user.getPlayer().getLocation(), Sound.UI_BUTTON_CLICK, 1, 1);
 
 								Language local = CubeRunner.get().getCRPlayer(user.getPlayer()).getLanguage();
-
-								JsonObject title = new JsonObject();
-								title.addProperty("text", String.valueOf((int) cooldownTimer / 20));
-								title.addProperty("bold", true);
-								title.addProperty("color", "gold");
-
-								JsonObject subtitle = new JsonObject();
-								subtitle.addProperty("text", local.get(Messages.KEYWORD_GENERAL_SECONDS));
-								subtitle.addProperty("italic", true);
-								subtitle.addProperty("color", "gray");
-
-								Utils.sendTitle(user.getPlayer(), title.toString(), subtitle.toString(), 5, 10, 5);
+								Utils.sendCountdownTitle(user.getPlayer(), cooldownTimer / 20,
+										local.get(Messages.KEYWORD_GENERAL_SECONDS), 5, 10, 5);
 							}
 						}
 						break;
@@ -727,17 +706,11 @@ public class Arena {
 		CRSign.updateSigns(this);
 		multiplayerGame = getAmountOfPlayerInGame() > 1;
 
-		objective.setDisplayName(ChatColor.AQUA + name + ChatColor.WHITE + " : " + ChatColor.GREEN
-				+ local.get(Messages.KEYWORD_SCOREBOARD_SCORE));
+		objective.displayName(Utils.text(ChatColor.AQUA + name + ChatColor.WHITE + " : " + ChatColor.GREEN
+				+ local.get(Messages.KEYWORD_SCOREBOARD_SCORE)));
 		objective.getScoreboard().resetScores(ChatColor.GREEN + "-------------------");
-		objective.getScoreboard()
-				.resetScores(ChatColor.GREEN + local.get(Messages.KEYWORD_INFO_MINIMUM) + " "
-						+ local.get(Messages.KEYWORD_SCOREBOARD_PLAYERS) + " = " + ChatColor.LIGHT_PURPLE
-						+ String.valueOf(minAmountPlayer));
-		objective.getScoreboard()
-				.resetScores(ChatColor.GREEN + local.get(Messages.KEYWORD_INFO_MAXIMUM) + " "
-						+ local.get(Messages.KEYWORD_SCOREBOARD_PLAYERS) + " = " + ChatColor.LIGHT_PURPLE
-						+ String.valueOf(maxAmountPlayer));
+		objective.getScoreboard().resetScores(minPlayerLine());
+		objective.getScoreboard().resetScores(maxPlayerLine());
 
 		blockShower(1, this);
 
@@ -751,42 +724,31 @@ public class Arena {
 
 	}
 
-	@SuppressWarnings("deprecation")
+	/** Clears every block of the arena's selected colors. */
 	private void resetArena() {
-		for (int x = minPoint.getBlockX(); x <= maxPoint.getBlockX(); x++)
-			for (int y = maxPoint.getBlockY(); y >= minPoint.getBlockY(); y--)
-				nextBlock: for (int z = minPoint.getBlockZ(); z <= maxPoint.getBlockZ(); z++) {
-					Location location = new Location(world, x, y, z);
-					Block block = location.getBlock();
-					if (block.getType() != Material.STAINED_CLAY && block.getType() != Material.WOOL)
-						continue;
+		Set<Material> chosen = EnumSet.noneOf(Material.class);
+		for (ItemStackManager item : colorManager.getOnlyChoosenBlocks())
+			chosen.add(item.getMaterial());
 
-					for (ItemStackManager item : colorManager.getOnlyChoosenBlocks())
-						if (item.getMaterial() == block.getType())
-							if (item.getItem().getDurability() == block.getData()) {
-								block.setType(Material.AIR);
-								continue nextBlock;
-							}
-
-				}
+		clearBlocks(chosen);
 	}
 
-	@SuppressWarnings("deprecation")
+	/** Clears every block of the given color, e.g. after it was removed from the arena's colors. */
 	public void resetArena(ItemStack item) {
+		if (ColorBlocks.isColorBlock(item.getType()))
+			clearBlocks(EnumSet.of(item.getType()));
+	}
+
+	private void clearBlocks(Set<Material> materials) {
+		if (minPoint == null || maxPoint == null)
+			return;
+
 		for (int x = minPoint.getBlockX(); x <= maxPoint.getBlockX(); x++)
 			for (int y = maxPoint.getBlockY(); y >= minPoint.getBlockY(); y--)
-				nextBlock: for (int z = minPoint.getBlockZ(); z <= maxPoint.getBlockZ(); z++) {
-					Location location = new Location(world, x, y, z);
-					Block block = location.getBlock();
-					if (block.getType() != Material.STAINED_CLAY && block.getType() != Material.WOOL)
-						continue;
-
-					if (item.getType() == block.getType())
-						if (item.getDurability() == block.getData()) {
-							block.setType(Material.AIR);
-							continue nextBlock;
-						}
-
+				for (int z = minPoint.getBlockZ(); z <= maxPoint.getBlockZ(); z++) {
+					Block block = world.getBlockAt(x, y, z);
+					if (materials.contains(block.getType()))
+						block.setType(Material.AIR, false);
 				}
 	}
 
@@ -818,12 +780,15 @@ public class Arena {
 								e.printStackTrace();
 							}
 
-				for (User user : arena.users) {
+				// Iterate over a copy: eliminating the last player ends the game and may clear the user list.
+				for (User user : new ArrayList<User>(arena.users)) {
 					if (user.isEliminated())
 						continue;
 
-					if (user.getLastTreeSecondsDistance() < 1 && user.getScore() >= 2)
+					if (user.getLastTreeSecondsDistance() < 1 && user.getScore() >= 2) {
 						arena.eliminateUser(user, LeavingReason.HIDING);
+						continue;
+					}
 
 					Player player = user.getPlayer();
 
@@ -835,11 +800,8 @@ public class Arena {
 						l = new Location(player.getWorld(), player.getLocation().getX(), arena.maxPoint.getY(),
 								player.getLocation().getZ());
 
-					NumberFormat formater = new DecimalFormat("#.#####");
-					double xOffset = Double.parseDouble(
-							formater.format(l.getX() > 0 ? l.getX() % 1 : 1 + (l.getX() % 1)).replace(",", "."));
-					double zOffset = Double.parseDouble(
-							formater.format(l.getZ() > 0 ? l.getZ() % 1 : 1 + (l.getZ() % 1)).replace(",", "."));
+					double xOffset = l.getX() - Math.floor(l.getX());
+					double zOffset = l.getZ() - Math.floor(l.getZ());
 
 					if (xOffset <= 0.7 && xOffset >= 0.3)
 						l.setX(Math.floor(l.getX()) + 0.5D);
@@ -861,50 +823,8 @@ public class Arena {
 						}
 					}
 
-					ItemStackManager itemStack = arena.colorManager.getRandomAvailableBlock();
-
-					try {
-
-						Object craftWorld = Class
-								.forName("org.bukkit.craftbukkit." + CubeRunner.NMS_VERSION + ".CraftWorld")
-								.cast(player.getWorld());
-						Object world = craftWorld.getClass().getMethod("getHandle").invoke(craftWorld);
-
-						@SuppressWarnings("deprecation")
-						Object entityBlock = Utils.getNMSClass("Block").getMethod("getById", int.class).invoke(null,
-								itemStack.getMaterial().getId());
-						Object iBlockData = entityBlock.getClass().getMethod("fromLegacyData", int.class)
-								.invoke(entityBlock, (int) itemStack.getDurability());
-						Object entityFallingBlock = Utils.getNMSClass("EntityFallingBlock")
-								.getConstructor(Utils.getNMSClass("World"), double.class, double.class, double.class,
-										Utils.getNMSClass("IBlockData"))
-								.newInstance(world, l.getX(), l.getY(), l.getZ(), iBlockData);
-
-						entityFallingBlock.getClass().getField("ticksLived").set(entityFallingBlock, (int) 1);
-						entityFallingBlock.getClass().getSuperclass().getMethod("setCustomName", String.class)
-								.invoke(entityFallingBlock, user.getUUID().toString());
-						entityFallingBlock.getClass().getSuperclass().getMethod("setCustomNameVisible", boolean.class)
-								.invoke(entityFallingBlock, false);
-
-						entityFallingBlock.getClass().getMethod("a", boolean.class).invoke(entityFallingBlock, true);
-						entityFallingBlock.getClass().getField("dropItem").set(entityFallingBlock, false);
-
-						world.getClass().getMethod("addEntity", Utils.getNMSClass("Entity"), SpawnReason.class)
-								.invoke(world, entityFallingBlock, SpawnReason.CUSTOM);
-
-						if (number % 2 == 0) {
-							entityFallingBlock.getClass().getSuperclass().getField("motX").set(entityFallingBlock,
-									(1 - (Math.random() * 2)) / 10.0);
-							entityFallingBlock.getClass().getSuperclass().getField("motY").set(entityFallingBlock, 0);
-							entityFallingBlock.getClass().getSuperclass().getField("motZ").set(entityFallingBlock,
-									(1 - (Math.random() * 2)) / 10.0);
-							entityFallingBlock.getClass().getSuperclass().getField("velocityChanged")
-									.set(entityFallingBlock, true);
-						}
-
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
+					Material cube = arena.colorManager.getRandomAvailableBlock().getMaterial();
+					FallingCubes.spawn(l, cube, user.getUUID(), number % 2 == 0);
 				}
 
 				Arena.blockShower(number + 1, arena);

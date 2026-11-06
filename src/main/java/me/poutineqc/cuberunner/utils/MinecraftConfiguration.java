@@ -44,7 +44,7 @@ public class MinecraftConfiguration {
 					Bukkit.getServer().getLogger().severe("Could not create playerData.ylm.");
 					Bukkit.getServer().getLogger().severe("Review your minecraft server's permissions to write and edit files in it's plugin directory");
 					Bukkit.getServer().getLogger().severe("Disabling CubeRunner...");
-					CubeRunner.get().getPluginLoader().disablePlugin(CubeRunner.get());
+					Bukkit.getPluginManager().disablePlugin(CubeRunner.get());
 				}
 			} else {
 				folderPath = (folderPath == null) ? "" : (folderPath + "/");
@@ -55,7 +55,7 @@ public class MinecraftConfiguration {
 					CubeRunner.get().getLogger().severe("Could not find " + fileName + ".yml");
 					CubeRunner.get().getLogger().severe("Contact the developper as fast as possible, this should not happend.");
 					Bukkit.getServer().getLogger().severe("Disabling CubeRunner...");
-					CubeRunner.get().getPluginLoader().disablePlugin(CubeRunner.get());
+					Bukkit.getPluginManager().disablePlugin(CubeRunner.get());
 				}
 			}
 		}
