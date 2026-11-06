@@ -63,7 +63,7 @@ public class Configuration {
 			if (host.equalsIgnoreCase("localhost"))
 				host = "127.0.0.1";
 			
-			port = config.getInt("host", 3306);
+			port = config.getInt("port", 3306);
 			user = config.getString("user");
 			password = config.getString("password");
 			database = config.getString("database");

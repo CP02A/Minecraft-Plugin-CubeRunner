@@ -29,6 +29,9 @@ public class ListenerInventoryClick implements Listener {
 			return;
 		
 		event.setCancelled(true);
+		if (item == null || item.getType().isAir())
+			return;
+
 		inv.update(item, event.getAction());
 	}
 	
